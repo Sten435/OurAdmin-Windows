@@ -1,6 +1,6 @@
 using System;
 
-namespace Domein.Database.Table.Enums {
+namespace Domein.DB.Enums {
 	public enum EDatabaseType {
 		Int,
 		Varchar,

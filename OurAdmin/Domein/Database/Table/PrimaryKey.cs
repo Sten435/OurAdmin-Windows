@@ -1,7 +1,7 @@
 using Domein.Interfaces;
 using System;
 
-namespace Domein.Database.Table {
+namespace Domein.DB {
 	public class PrimaryKey : IKey {
 	}
 

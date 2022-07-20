@@ -1,12 +1,12 @@
 using System;
 
-namespace Domein.Database.Table.Exceptions {
-	public class ColumnException {
+namespace Domein.DB.Exceptions {
+	public class ColumnException : Exception {
 		public ColumnException() {
-			throw new NotImplementedException("Not implemented");
+
 		}
-		public ColumnException(string message) {
-			throw new NotImplementedException("Not implemented");
+		public ColumnException(string message) : base(message) {
+
 		}
 
 	}

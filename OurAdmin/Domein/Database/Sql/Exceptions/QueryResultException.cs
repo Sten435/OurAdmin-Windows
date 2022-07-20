@@ -1,12 +1,12 @@
 using System;
 
 namespace Domein.Exceptions {
-	public class QueryResultException {
+	public class QueryResultException : Exception {
 		public QueryResultException() {
-			throw new NotImplementedException("Not implemented");
+
 		}
-		public QueryResultException(string message) {
-			throw new NotImplementedException("Not implemented");
+		public QueryResultException(string message) : base(message) {
+
 		}
 
 	}

@@ -7,4 +7,9 @@
 		<Nullable>disable</Nullable>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Domein\Domein.csproj" />
+	  <ProjectReference Include="..\Repository\Repository.csproj" />
+	</ItemGroup>
+
 </Project>
