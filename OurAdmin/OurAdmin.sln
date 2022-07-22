@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domein", "Domein\Domein.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CUI", "CUI\CUI.csproj", "{104A4A45-05BE-46B1-B0FC-0221E3343C6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "Repository\Repository.csproj", "{5941A5F0-0B7D-4D4C-BCD3-0F3CFE2A451A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "Repository\Repository.csproj", "{5941A5F0-0B7D-4D4C-BCD3-0F3CFE2A451A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomeinTests1", "DomeinTests1\DomeinTests1.csproj", "{3433F6AF-3BBD-4894-B8C5-208F8EF079BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{5941A5F0-0B7D-4D4C-BCD3-0F3CFE2A451A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5941A5F0-0B7D-4D4C-BCD3-0F3CFE2A451A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5941A5F0-0B7D-4D4C-BCD3-0F3CFE2A451A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3433F6AF-3BBD-4894-B8C5-208F8EF079BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3433F6AF-3BBD-4894-B8C5-208F8EF079BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3433F6AF-3BBD-4894-B8C5-208F8EF079BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3433F6AF-3BBD-4894-B8C5-208F8EF079BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -14,9 +14,7 @@ namespace Domein.DB {
 		}
 
 		private void ValidateUserInfo() {
-			if (Validate.NullOrWhiteSpace(User + Password)) throw new UserException("Username and Password can't be empty");
 			if (Validate.NullOrWhiteSpace(User)) throw new UserException("Username can't be empty");
-			if (Validate.NullOrWhiteSpace(Password)) throw new UserException("Password can't be empty");
 		}
 	}
 

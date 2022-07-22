@@ -8,13 +8,13 @@ using System.Collections.Generic;
 
 namespace CUI {
 	public class Program {
-		private static IDatabaseConInfo databaseConnectionInfoRepo;
+		private static IServerInfo ServerRepo;
 		private static DatabaseController databaseController;
 		private static DomeinController domeinController;
 
 		static void Main() {
-			databaseConnectionInfoRepo = new DatabaseConnectionInfoRepo();
-			databaseController = new(databaseConnectionInfoRepo);
+			ServerRepo = new ServerRepo();
+			databaseController = new(ServerRepo);
 			domeinController = new(databaseController);
 
 			while (true) {
