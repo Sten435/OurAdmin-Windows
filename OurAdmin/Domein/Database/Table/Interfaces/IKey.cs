@@ -1,7 +1,5 @@
-using System;
+namespace Domein.DataBase.DataTable.Interfaces {
 
-namespace Domein.Interfaces {
 	public interface IKey {
 	}
-
 }

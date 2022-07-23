@@ -1,29 +1,23 @@
-using Domein.DB;
-using Domein.Exceptions;
+using Domein.DataBase.Exceptions;
 using Domein.Validatie;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace Domein.DBConnectionInfo {
+namespace Domein.DataBase {
+
 	public class Server {
 		public string Host { get; set; }
 		public string Port { get; set; }
-		public List<Database> Databases { get; set; }
+		public HashSet<Database> Databases { get; set; }
 
 		private UserInfo _userInfo;
-
-		public void Connect() {
-			throw new NotImplementedException("Not implemented");
-		}
-		public void Close() {
-			throw new NotImplementedException("Not implemented");
-		}
 
 		public override bool Equals(object obj) {
 			return obj is Server server &&
 				   Host == server.Host &&
 				   Port == server.Port &&
-				   EqualityComparer<List<Database>>.Default.Equals(Databases, server.Databases) &&
+				   EqualityComparer<HashSet<Database>>.Default.Equals(Databases, server.Databases) &&
 				   EqualityComparer<UserInfo>.Default.Equals(_userInfo, server._userInfo);
 		}
 
@@ -36,7 +30,7 @@ namespace Domein.DBConnectionInfo {
 			this.Port = port.Trim();
 			ValidateServer();
 			this._userInfo = userInfo;
-			this.Databases = databases;
+			this.Databases = databases.ToHashSet();
 		}
 
 		private void ValidateServer() {
@@ -44,5 +38,4 @@ namespace Domein.DBConnectionInfo {
 			if (Validate.NullOrWhiteSpace(Port)) throw new DatabaseException("Port can't be empty");
 		}
 	}
-
 }

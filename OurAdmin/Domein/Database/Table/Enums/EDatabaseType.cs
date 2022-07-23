@@ -1,6 +1,5 @@
-using System;
+namespace Domein.DataBase.DataTable.Enums {
 
-namespace Domein.DB.Enums {
 	public enum EDatabaseType {
 		Int,
 		Varchar,
@@ -8,7 +7,5 @@ namespace Domein.DB.Enums {
 		Double,
 		Decimal,
 		Datetime,
-
 	}
-
 }

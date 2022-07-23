@@ -1,14 +1,13 @@
 using System;
 
-namespace Domein.Exceptions {
+namespace Domein.DataBase.Exceptions {
+
 	public class UserException : Exception {
+
 		public UserException() {
-
 		}
+
 		public UserException(string message) : base(message) {
-
 		}
-
 	}
-
 }

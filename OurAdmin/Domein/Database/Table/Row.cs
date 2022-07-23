@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 
-namespace Domein.DB {
+namespace Domein.DataBase.DataTable {
+
 	public class Row {
 		public List<string> Data { get; set; }
 
@@ -18,5 +19,4 @@ namespace Domein.DB {
 			this.Data = data;
 		}
 	}
-
 }

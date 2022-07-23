@@ -1,10 +1,7 @@
-using System;
+namespace Domein.DataBase.DataTable.Enums {
 
-namespace Domein.DB.Enums {
 	public enum EDatabaseExtra {
 		Auto_Increment,
 		None,
-
 	}
-
 }

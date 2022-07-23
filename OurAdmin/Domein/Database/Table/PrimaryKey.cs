@@ -1,8 +1,7 @@
-using Domein.Interfaces;
-using System;
+using Domein.DataBase.DataTable.Interfaces;
 
-namespace Domein.DB {
+namespace Domein.DataBase.DataTable {
+
 	public class PrimaryKey : IKey {
 	}
-
 }

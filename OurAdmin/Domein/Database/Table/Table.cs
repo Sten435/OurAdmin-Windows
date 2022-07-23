@@ -1,17 +1,18 @@
 using System;
 using System.Collections.Generic;
 
-namespace Domein.DB {
+namespace Domein.DataBase.DataTable {
+
 	public class Table {
 		public List<Row> Rows { get; }
 		public List<Column> Columns { get; }
 
-		public void GenerateTable() {
-			throw new System.NotImplementedException("Not implemented");
-		}
 		public void AddRow(Row row) => Rows.Add(row);
+
 		public bool RemoveRow(Row row) => Rows.Remove(row);
+
 		public void AddColumn(Column column) => Columns.Add(column);
+
 		public void RemoveColumn(Column column) => Columns.Remove(column);
 
 		public override bool Equals(object obj) {
@@ -29,5 +30,4 @@ namespace Domein.DB {
 			this.Columns = new();
 		}
 	}
-
 }

@@ -1,9 +1,13 @@
-using Domein.Exceptions;
+using Domein.DataBase.DataTable;
+using Domein.DataBase.Exceptions;
+using Domein.DataBase.Sql;
+using Domein.DataBase.Sql.Exceptions;
 using Domein.Validatie;
 using System;
 using System.Collections.Generic;
 
-namespace Domein.DB {
+namespace Domein.DataBase {
+
 	public class Database {
 		public string Name { get; set; }
 		public List<Table> Tables { get; }
@@ -11,7 +15,7 @@ namespace Domein.DB {
 		public override bool Equals(object obj) {
 			return obj is Database database &&
 				   Name == database.Name &&
-				   EqualityComparer<List<Table>>.Default.Equals(Tables, database.Tables);
+				   EqualityComparer<List<Table>>.Default.Equals((List<Table>)Tables, (List<Table>)database.Tables);
 		}
 
 		public override int GetHashCode() {
@@ -33,5 +37,4 @@ namespace Domein.DB {
 			return new QueryResult(query);
 		}
 	}
-
 }

@@ -1,11 +1,12 @@
+using Domein.DataBase.DataTable.Enums;
+using Domein.DataBase.DataTable.Exceptions;
+using Domein.DataBase.DataTable.Interfaces;
 using Domein.Validatie;
-using Domein.DB.Enums;
-using Domein.DB.Exceptions;
-using Domein.Interfaces;
 using System;
 using System.Collections.Generic;
 
-namespace Domein.DB {
+namespace Domein.DataBase.DataTable {
+
 	public class Column {
 		public string Name { get; set; }
 		public bool IsNull { get; set; }
@@ -44,5 +45,4 @@ namespace Domein.DB {
 			if (Validate.NullOrWhiteSpace(TypeAmount)) throw new ColumnException("Column typeAmount can't be empty");
 		}
 	}
-
 }

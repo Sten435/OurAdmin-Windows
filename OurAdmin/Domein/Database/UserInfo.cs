@@ -1,8 +1,8 @@
-using System;
-using Domein.Exceptions;
+using Domein.DataBase.Exceptions;
 using Domein.Validatie;
 
-namespace Domein.DB {
+namespace Domein.DataBase {
+
 	public class UserInfo {
 		public string User { get; set; }
 		public string Password { get; set; }
@@ -17,5 +17,4 @@ namespace Domein.DB {
 			if (Validate.NullOrWhiteSpace(User)) throw new UserException("Username can't be empty");
 		}
 	}
-
 }

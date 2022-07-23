@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 
-namespace Domein.DB {
+namespace Domein.DataBase.Sql {
+
 	public class QueryResult {
 		public object Data { get; set; }
 
@@ -18,5 +19,4 @@ namespace Domein.DB {
 			return HashCode.Combine(Data);
 		}
 	}
-
 }

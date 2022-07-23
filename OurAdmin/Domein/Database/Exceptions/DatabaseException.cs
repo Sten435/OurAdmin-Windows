@@ -1,12 +1,13 @@
 using System;
 
-namespace Domein.Exceptions {
+namespace Domein.DataBase.Exceptions {
+
 	public class DatabaseException : Exception {
+
 		public DatabaseException() {
 		}
+
 		public DatabaseException(string message) : base(message) {
 		}
-
 	}
-
 }

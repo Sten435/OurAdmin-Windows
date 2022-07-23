@@ -1,8 +1,9 @@
-using Domein.Interfaces;
+using Domein.DataBase.DataTable.Interfaces;
 using System;
 using System.Collections.Generic;
 
-namespace Domein.DB {
+namespace Domein.DataBase.DataTable {
+
 	public class ForeignKey : IKey {
 		public Column Column { get; set; }
 
@@ -19,5 +20,4 @@ namespace Domein.DB {
 			this.Column = column;
 		}
 	}
-
 }
