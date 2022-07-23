@@ -1,3 +1,7 @@
+<div align="start">
+  <img src="https://visitor-badge.laobi.icu/badge?page_id=Sten435.Sten435&right_color=lightslategray"  />
+</div>
+
 # OurAdmin - Windows Version
 
 OurAdmin is a SQL database client where you can access and edit your databases through a GUI.
@@ -30,6 +34,14 @@ graph LR
     B -..-> C(Mysql)
     B -..-> F(Microsoft SQL Server)
 ```
+
+## Created With
+
+<div align="start">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" height="40" width="52" alt="csharp logo"  />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dotnetcore/dotnetcore-original.svg" height="40" width="52" alt="dotnetcore logo"  />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visualstudio/visualstudio-plain.svg" height="40" width="52" alt="visualstudio logo"  />
+</div>
 
 ## Contributing
 We greatly welcome contributions to this project.
