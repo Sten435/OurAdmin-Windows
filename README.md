@@ -1,2 +1,50 @@
-# OurAdmin-Windows
- Tiny SQL-Client made in wpf for windows.
+<div align="start">
+  <img src="https://visitor-badge.laobi.icu/badge?page_id=Sten435.Sten435&right_color=lightslategray"  />
+</div>
+
+# OurAdmin - Windows Version
+
+OurAdmin is a SQL database client where you can access and edit your databases through a GUI.
+
+*We support:*
+
+- **Mysql**
+- **Microsoft SQL Server**
+
+## Download
+
+You can download the latest version from the <ins>release</ins> section.
+
+## Installation
+
+You can install the project by opening:
+**`
+Setup.exe
+`**
+
+
+## How does it work (in a nutshell)
+Its actualy fairly simple, OurAdmin sends SQL query's to you configured database.
+
+Through those query's OurAdmin is able to get the needed information to display it on the client.
+
+```mermaid
+graph LR
+    A{OurAdmin} ===>| Sends Query's To | B[(Your Database)]
+    B -..-> C(Mysql)
+    B -..-> F(Microsoft SQL Server)
+```
+
+## Created With
+
+<div align="start">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" height="40" width="52" alt="csharp logo"  />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dotnetcore/dotnetcore-original.svg" height="40" width="52" alt="dotnetcore logo"  />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visualstudio/visualstudio-plain.svg" height="40" width="52" alt="visualstudio logo"  />
+</div>
+
+## Contributing
+We greatly welcome contributions to this project.
+
+## License
+[Apache 2.0](https://github.com/Sten435/OurAdmin-Windows/blob/main/LICENSE)

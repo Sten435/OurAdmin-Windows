@@ -1,21 +1,33 @@
 using Domein.DataBase;
-using Domein.DataBase.Sql;
+using Domein.DataBase.DataTable;
 using Domein.Validatie;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Domein.Controllers {
 
 	public class DomeinController {
 		public readonly DatabaseController DatabaseController;
 		public Database ConnectedDatabase => DatabaseController.ConnectedDatabase;
+		public bool IsDatabaseConnected => DatabaseController.IsDatabaseConnected;
 
 		public DomeinController(DatabaseController databaseController) {
 			this.DatabaseController = databaseController;
 		}
 
-		public QueryResult SqlQuery(string query) => DatabaseController.SqlQuery(query);
+		public static string ToJson<T>(T obj) {
+			var jsonConvertSettings = new JsonSerializerSettings {
+				MaxDepth = null
+			};
+			return JsonConvert.SerializeObject(obj, Formatting.Indented, jsonConvertSettings);
+		}
 
-		public HashSet<Server> GetServers() => DatabaseController.GetServers();
+		public Table SqlQuery(string query) => DatabaseController.SqlQuery(query);
+
+		public List<Server> GetServers() => DatabaseController.GetServers().ToList();
+
+		public List<Database> GetConnectedServerDatabases() => DatabaseController.GetConnectedServerDatabases().ToList();
 
 		public void CloseConnectionToServer() => DatabaseController.CloseConnectionToServer();
 

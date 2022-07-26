@@ -1,6 +1,8 @@
 ﻿using Domein.DataBase;
+using Domein.DataBase.DataTable;
 using Domein.DataBase.Sql;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ReposInterface {
 
@@ -16,8 +18,8 @@ namespace ReposInterface {
 
 		public void RemoveDatabase(Server server, Database database);
 
-		public void UseDatabase(Database database);
+		public void UseDatabase(Server server, Database database);
 
-		QueryResult SqlQuery(string query);
+		DataTable SqlQuery(Server server, string query);
 	}
 }

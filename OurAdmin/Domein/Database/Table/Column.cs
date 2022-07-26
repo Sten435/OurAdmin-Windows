@@ -1,7 +1,3 @@
-using Domein.DataBase.DataTable.Enums;
-using Domein.DataBase.DataTable.Exceptions;
-using Domein.DataBase.DataTable.Interfaces;
-using Domein.Validatie;
 using System;
 using System.Collections.Generic;
 
@@ -10,11 +6,11 @@ namespace Domein.DataBase.DataTable {
 	public class Column {
 		public string Name { get; set; }
 		public bool IsNull { get; set; }
-		public string TypeAmount { get; set; }
-
-		public EDatabaseType Type { get; set; }
-		public EDatabaseExtra Extra { get; set; }
-		public IKey Key { get; set; }
+		public int TypeAmount { get; set; }
+		public string Type { get; set; }
+		public string SqlType { get; set; }
+		public object DefaultValue { get; set; }
+		public bool AutoIncrement { get; set; }
 
 		public override bool Equals(object obj) {
 			return obj is Column column &&
@@ -22,27 +18,13 @@ namespace Domein.DataBase.DataTable {
 				   IsNull == column.IsNull &&
 				   TypeAmount == column.TypeAmount &&
 				   Type == column.Type &&
-				   Extra == column.Extra &&
-				   EqualityComparer<IKey>.Default.Equals(Key, column.Key);
+				   SqlType == column.SqlType &&
+				   EqualityComparer<object>.Default.Equals(DefaultValue, column.DefaultValue) &&
+				   AutoIncrement == column.AutoIncrement;
 		}
 
 		public override int GetHashCode() {
-			return HashCode.Combine(Name, IsNull, TypeAmount, Type, Extra, Key);
-		}
-
-		public Column(string name, bool isNull, string typeAmount, EDatabaseType type, EDatabaseExtra extra, IKey key) {
-			this.Name = name.Trim();
-			this.TypeAmount = typeAmount.Trim();
-			ValidateColumn();
-			this.IsNull = isNull;
-			this.Type = type;
-			this.Extra = extra;
-			this.Key = key;
-		}
-
-		private void ValidateColumn() {
-			if (Validate.NullOrWhiteSpace(Name)) throw new ColumnException("Column name can't be empty");
-			if (Validate.NullOrWhiteSpace(TypeAmount)) throw new ColumnException("Column typeAmount can't be empty");
+			return HashCode.Combine(Name, IsNull, TypeAmount, Type, SqlType, DefaultValue, AutoIncrement);
 		}
 	}
 }

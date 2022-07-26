@@ -1,13 +1,16 @@
 ﻿using Domein.DataBase;
-using Domein.DataBase.Sql;
+using MySqlConnector;
 using ReposInterface;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Repository {
 
 	public class ServerRepo : IServerInfo {
 		private readonly HashSet<Server> _serverList;
+		private Database _selectedDatabase { get; set; }
 
 		public ServerRepo() {
 			_serverList = new HashSet<Server>();
@@ -23,12 +26,24 @@ namespace Repository {
 
 		public void RemoveServer(Server database) => _serverList.Remove(database);
 
-		public QueryResult SqlQuery(string query) {
-			return new QueryResult(query);
+		public DataTable SqlQuery(Server server, string query) {
+			using var connection = new MySqlConnection(server.ConnectionString);
+			connection.Open();
+
+			if (_selectedDatabase != null && connection.Database != _selectedDatabase.Name)
+				connection.ChangeDatabase(_selectedDatabase.Name);
+
+			using var command = new MySqlCommand(query.Replace(";", ""), connection);
+			using DataTable dataTable = new();
+			using MySqlDataAdapter MysqlDataAdapter = new(command);
+
+			MysqlDataAdapter.Fill(dataTable);
+
+			return dataTable;
 		}
 
-		public void UseDatabase(Database database) {
-			SqlQuery($"use {database.Name};");
+		public void UseDatabase(Server server, Database database) {
+			_selectedDatabase = database;
 		}
 	}
 }
