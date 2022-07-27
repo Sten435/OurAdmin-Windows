@@ -27,6 +27,7 @@ namespace CUI {
 				List<Database> databases = new() { };
 
 				Console.Clear();
+
 				try {
 					hostNaam = GetHostNaam();
 					userInfo = GetUserInfo();
@@ -55,10 +56,7 @@ namespace CUI {
 							}
 						}
 
-						//if (dataList.Rows.Count != 0) {
-						System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
-							Utility.AskUser.ReadKnop();
-						//}
+						Utility.AskUser.ReadKnop();
 						Console.Clear();
 					}
 				} catch (Exception error) {
@@ -67,7 +65,6 @@ namespace CUI {
 					Console.WriteLine(error.Message);
 					Console.ResetColor();
 				}
-				System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
 				Utility.AskUser.ReadKnop();
 			}
 
