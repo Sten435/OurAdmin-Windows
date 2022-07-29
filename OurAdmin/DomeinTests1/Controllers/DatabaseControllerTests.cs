@@ -36,15 +36,15 @@ namespace Domein.Controllers.Tests {
 
 			tables = new();
 
-			database1 = new("testDatabase1", tables);
-			database2 = new("testDatabase2", tables);
-			database3 = new("testDatabase3", tables);
+			database1 = new("testdatabase");
+			database2 = new("testDatabase2");
+			database3 = new("testDatabase3");
 
-			user2 = new("stan", "pwd123");
+			user2 = new("root", "");
 			user3 = new("user", "banz");
 
 			server1 = null;
-			server2 = new("localhost", user2, new() { database2 });
+			server2 = new("localhost", user2, new() { database1 });
 			server3 = new("combel", user3, new());
 		}
 
@@ -119,8 +119,10 @@ namespace Domein.Controllers.Tests {
 		[TestMethod()]
 		public void SqlQueryTest() {
 			//Check if the query gives the correct reponse.
-			QueryResult result = domeinController.SqlQuery("Testing Query");
-			if (result.Data.ToString()?.Trim() == "") Assert.Fail();
+			domeinController.AddServer(server2);
+			domeinController.OpenConnectionToServer(server2);
+			Table result = domeinController.SqlQuery("Show databases;");
+			if (result.Rows.Count == 0) Assert.Fail();
 		}
 
 		[TestMethod()]
@@ -130,11 +132,11 @@ namespace Domein.Controllers.Tests {
 			domeinController.OpenConnectionToServer(server2);
 
 			Assert.ThrowsException<DatabaseException>(() => {
-				domeinController.UseDatabase(database1);
+				domeinController.UseDatabase(database2);
 			});
 
-			domeinController.UseDatabase(database2);
-			if (domeinController.ConnectedDatabase.Name != database2.Name) Assert.Fail();
+			domeinController.UseDatabase(database1);
+			if (domeinController.ConnectedDatabase.Name != database1.Name) Assert.Fail();
 		}
 
 		[TestMethod()]
@@ -163,8 +165,8 @@ namespace Domein.Controllers.Tests {
 			domeinController.UseDatabase(database3);
 			domeinController.RemoveDatabase(database3);
 
-			Assert.IsNull(domeinController.ConnectedDatabase);
 			Assert.ThrowsException<DatabaseException>(() => {
+				var connectedDb = domeinController.ConnectedDatabase;
 				domeinController.RemoveDatabase(database3);
 			});
 		}

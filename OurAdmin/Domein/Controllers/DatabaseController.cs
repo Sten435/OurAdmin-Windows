@@ -151,7 +151,7 @@ namespace Domein.Controllers {
 		/// <param name="server">The server that needs to be removed from the serverList.</param>
 		/// <exception cref="DatabaseException"></exception>
 		public void RemoveServer(Server server) {
-			if (_connectedServer != null || IsServerConnected) throw new DatabaseException("Server has an open connection, close it first");
+			if (IsServerConnected && _connectedServer.Equals(server)) throw new DatabaseException("Server has an open connection, close it first");
 			_databasesRepo.RemoveServer(server);
 		}
 

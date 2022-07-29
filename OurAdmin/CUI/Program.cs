@@ -24,6 +24,7 @@ namespace CUI {
 				string hostNaam;
 				UserInfo userInfo;
 				Server server;
+				Server server2;
 				List<Database> databases = new() { };
 
 				Console.Clear();
@@ -32,8 +33,10 @@ namespace CUI {
 					hostNaam = GetHostNaam();
 					userInfo = GetUserInfo();
 					server = new(hostNaam, userInfo, databases);
+					server2 = new("testing server 2", userInfo, databases);
 
 					domeinController.AddServer(server);
+					domeinController.AddServer(server2);
 					domeinController.OpenConnectionToServer(server);
 
 					SelectDB();
