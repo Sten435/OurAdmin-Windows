@@ -1,18 +1,25 @@
 ﻿using Domein.DataBase;
 using MySqlConnector;
 using ReposInterface;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text.RegularExpressions;
 
-namespace Repository {
+namespace Repository
+{
 
-	public class ServerRepo : IServerInfo {
+	public class ServerRepo : IServerInfo
+	{
 		private readonly HashSet<Server> _serverList;
-		private Database _selectedDatabase { get; set; }
+		private Database _selectedDatabase {
+			get; set;
+		}
+		private DatabaseType databaseType;
 
-		public ServerRepo() {
+		public ServerRepo(DatabaseType _databaseType)
+		{
+			databaseType = _databaseType;
 			_serverList = new HashSet<Server>();
 		}
 
@@ -54,20 +61,25 @@ namespace Repository {
 		/// <param name="server">The server where the query needs to be executed.</param>
 		/// <param name="query">The query that needs to be executed.</param>
 		/// <returns></returns>
-		public DataTable SqlQuery(Server server, string query) {
-			using var connection = new MySqlConnection(server.ConnectionString);
-			connection.Open();
+		public DataTable SqlQuery(Server server, string query)
+		{
+			if (databaseType == DatabaseType.MYSQL)
+			{
+				using var connection = new MySqlConnection(server.ConnectionString);
+				connection.Open();
 
-			if (_selectedDatabase != null && connection.Database != _selectedDatabase.Name)
-				connection.ChangeDatabase(_selectedDatabase.Name);
+				if (_selectedDatabase != null && connection.Database != _selectedDatabase.Name)
+					connection.ChangeDatabase(_selectedDatabase.Name);
 
-			using var command = new MySqlCommand(query.Replace(";", ""), connection);
-			using DataTable dataTable = new();
-			using MySqlDataAdapter MysqlDataAdapter = new(command);
+				using var command = new MySqlCommand(query.Replace(";", ""), connection);
+				using DataTable dataTable = new();
+				using MySqlDataAdapter MysqlDataAdapter = new(command);
 
-			MysqlDataAdapter.Fill(dataTable);
+				MysqlDataAdapter.Fill(dataTable);
 
-			return dataTable;
+				return dataTable;
+			} else
+				throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -75,7 +87,8 @@ namespace Repository {
 		/// </summary>
 		/// <param name="server">The server where the database is part of.</param>
 		/// <param name="database">The database to use.</param>
-		public void UseDatabase(Server server, Database database) {
+		public void UseDatabase(Server server, Database database)
+		{
 			_selectedDatabase = database;
 		}
 	}

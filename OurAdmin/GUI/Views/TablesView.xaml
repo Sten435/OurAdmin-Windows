@@ -1,0 +1,14 @@
+﻿<Page
+    x:Class="GUI.Views.TablesView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:GUI.Views.Controls"
+    Title="TablesView">
+
+    <Grid>
+        <DockPanel>
+            <Controls:SideBar DockPanel.Dock="Left" />
+            <Controls:HeaderNavigation DockPanel.Dock="Top" />
+        </DockPanel>
+    </Grid>
+</Page>

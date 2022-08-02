@@ -7,9 +7,11 @@ using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Domein.Controllers {
+namespace Domein.Controllers
+{
 
-	public class DatabaseController {
+	public class DatabaseController
+	{
 		private readonly IServerInfo _databasesRepo;
 		private Server _connectedServer = null;
 
@@ -30,12 +32,14 @@ namespace Domein.Controllers {
 			get {
 				if (IsDatabaseConnected)
 					return _connectedDatabase;
-				else throw new DatabaseException("There is no database currently connected");
+				else
+					throw new DatabaseException("There is no database currently connected");
 			}
 			set => _connectedDatabase = value;
 		}
 
-		public DatabaseController(IServerInfo databasesRepo) {
+		public DatabaseController(IServerInfo databasesRepo)
+		{
 			_databasesRepo = databasesRepo;
 		}
 
@@ -44,9 +48,12 @@ namespace Domein.Controllers {
 		/// </summary>
 		/// <returns>A HashSet list with databases</returns>
 		/// <exception cref="DatabaseException"></exception>
-		public HashSet<Database> GetConnectedServerDatabases() {
-			if (_connectedServer != null) return _connectedServer.Databases;
-			else throw new DatabaseException("There is no server currently connected");
+		public HashSet<Database> GetConnectedServerDatabases()
+		{
+			if (_connectedServer != null)
+				return _connectedServer.Databases;
+			else
+				throw new DatabaseException("There is no server currently connected");
 		}
 
 		/// <summary>
@@ -55,15 +62,19 @@ namespace Domein.Controllers {
 		/// <param name="query">The query that needs to be executed.</param>
 		/// <returns></returns>
 		/// <exception cref="DatabaseException"></exception>
-		public Table SqlQuery(string query) {
-			if (_connectedServer != null) {
+		public Table SqlQuery(string query)
+		{
+			if (_connectedServer != null)
+			{
 				DataTable dataTable = _databasesRepo.SqlQuery(_connectedServer, query);
 				Table table = new();
 
-				foreach (DataRow row in dataTable.Rows) {
+				foreach (DataRow row in dataTable.Rows)
+				{
 					List<object> rowData = new();
 
-					foreach (DataColumn col in dataTable.Columns) {
+					foreach (DataColumn col in dataTable.Columns)
+					{
 						Column column = new();
 
 						table.Relations = col.Table.ChildRelations;
@@ -84,7 +95,8 @@ namespace Domein.Controllers {
 				}
 
 				return table;
-			} else throw new DatabaseException("None - There is no server currently connected");
+			} else
+				throw new DatabaseException("None - There is no server currently connected");
 		}
 
 		/// <summary>
@@ -93,23 +105,29 @@ namespace Domein.Controllers {
 		/// <param name="givenQuery">The query to execute.</param>
 		/// <param name="column">The column where you want the sqlType for.</param>
 		/// <returns>The sqlType for the given column. (varchar, int, timestamp, ...)</returns>
-		private string GetColumnType(string givenQuery, string column) {
-			if (!IsDatabaseConnected) return "None";
+		private string GetColumnType(string givenQuery, string column)
+		{
+			if (!IsDatabaseConnected)
+				return "None";
 			string table = "";
 
-			try {
+			try
+			{
 				DataTable dataTable = _databasesRepo.SqlQuery(_connectedServer, "show tables;");
 				//Todo minder checken op tables nu elke keer ddat er een column gecheked moet worden
 
 				List<string> tables = new();
-				foreach (DataRow row in dataTable.Rows) {
+				foreach (DataRow row in dataTable.Rows)
+				{
 
-					foreach (DataColumn col in dataTable.Columns) {
+					foreach (DataColumn col in dataTable.Columns)
+					{
 						tables.Add(row[col].ToString());
 					}
 				}
 
-				for (int i = 0; i < tables.Count; i++) {
+				for (int i = 0; i < tables.Count; i++)
+				{
 					string pattern = @$" +from{{1}} +(\b{Regex.Escape(tables[i])}\b){{1}}";
 
 					Regex regex = new(pattern, RegexOptions.IgnoreCase);
@@ -117,19 +135,24 @@ namespace Domein.Controllers {
 					var isRegexFouned = regex.IsMatch(givenQuery);
 					// There is a table found in the givenQuery that correcpondents to a table from the database;
 					// This method of extracting the table from the givenQuery is not the safest one, but it does the job ;-)
-					if (isRegexFouned) {
+					if (isRegexFouned)
+					{
 						table = tables[i];
 						break;
 					}
 				}
 
-				if (table != "") {
+				if (table != "")
+				{
 					dataTable = _databasesRepo.SqlQuery(_connectedServer, $"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name='{table}' AND COLUMN_NAME='{column}';"); // Get the sql datatype from the column.
 
-					if (dataTable.Rows.Count == 0) return "Try removing the 'as' operator (if presented)"; // This can indecate the use of 'as' in the query. as is used to rename a column in the result, Therefore we have no rows back becuse the made up column name does not exist in the table.
+					if (dataTable.Rows.Count == 0)
+						return "Try removing the 'as' operator (if presented)"; // This can indecate the use of 'as' in the query. as is used to rename a column in the result, Therefore we have no rows back becuse the made up column name does not exist in the table.
 
-					foreach (DataRow row in dataTable.Rows) {
-						foreach (DataColumn col in dataTable.Columns) {
+					foreach (DataRow row in dataTable.Rows)
+					{
+						foreach (DataColumn col in dataTable.Columns)
+						{
 							string sqlType = row[col].ToString();
 							return sqlType;
 						}
@@ -150,8 +173,10 @@ namespace Domein.Controllers {
 		/// </summary>
 		/// <param name="server">The server that needs to be removed from the serverList.</param>
 		/// <exception cref="DatabaseException"></exception>
-		public void RemoveServer(Server server) {
-			if (IsServerConnected && _connectedServer.Equals(server)) throw new DatabaseException("Server has an open connection, close it first");
+		public void RemoveServer(Server server)
+		{
+			if (IsServerConnected && _connectedServer.Equals(server))
+				throw new DatabaseException("Server has an open connection, close it first");
 			_databasesRepo.RemoveServer(server);
 		}
 
@@ -166,10 +191,13 @@ namespace Domein.Controllers {
 		/// </summary>
 		/// <param name="server">The server that you want to connect to.</param>
 		/// <exception cref="DatabaseException"></exception>
-		public void OpenConnectionToServer(Server server) {
-			if (_connectedServer != null && IsServerConnected) throw new DatabaseException("There is an existing connected database, close it and try again");
+		public void OpenConnectionToServer(Server server)
+		{
+			if (_connectedServer != null && IsServerConnected)
+				throw new DatabaseException("There is an existing connected database, close it and try again");
 			List<Server> servers = _databasesRepo.GetServers().ToList();
-			if (!servers.Contains(server)) throw new DatabaseException($"The server: {server.Host} does not exist, add it first");
+			if (!servers.Contains(server))
+				throw new DatabaseException($"The server: {server.Host} does not exist, add it first");
 			_connectedServer = server;
 			IsServerConnected = true;
 		}
@@ -178,8 +206,10 @@ namespace Domein.Controllers {
 		/// Close the connection to the server.
 		/// </summary>
 		/// <exception cref="DatabaseException"></exception>
-		public void CloseConnectionToServer() {
-			if (_connectedServer == null || !IsServerConnected) throw new DatabaseException("There is no database currently connected");
+		public void CloseConnectionToServer()
+		{
+			if (_connectedServer == null || !IsServerConnected)
+				throw new DatabaseException("There is no database currently connected");
 			ConnectedDatabase = null;
 			_connectedServer = null;
 			IsServerConnected = false;
@@ -190,9 +220,12 @@ namespace Domein.Controllers {
 		/// </summary>
 		/// <param name="database">The database where you want to connect to.</param>
 		/// <exception cref="DatabaseException"></exception>
-		public void UseDatabase(Database database) {
-			if (_connectedServer == null || !IsServerConnected) throw new DatabaseException("There is no server currently connected");
-			if (!_connectedServer.Databases.Contains(database)) throw new DatabaseException($"There is no such database available on server: {_connectedServer.Host}");
+		public void UseDatabase(Database database)
+		{
+			if (_connectedServer == null || !IsServerConnected)
+				throw new DatabaseException("There is no server currently connected");
+			if (!_connectedServer.Databases.Contains(database))
+				throw new DatabaseException($"There is no such database available on server: {_connectedServer.Host}");
 			_databasesRepo.UseDatabase(_connectedServer, database);
 			ConnectedDatabase = database;
 		}
@@ -202,9 +235,12 @@ namespace Domein.Controllers {
 		/// </summary>
 		/// <param name="database">The database to add.</param>
 		/// <exception cref="DatabaseException"></exception>
-		public void AddDatabase(Database database) {
-			if (_connectedServer == null || !IsServerConnected) throw new DatabaseException("No server connected, please connect to a server");
-			if (_connectedServer.Databases.Contains(database)) throw new DatabaseException("Database already exists in the server");
+		public void AddDatabase(Database database)
+		{
+			if (_connectedServer == null || !IsServerConnected)
+				throw new DatabaseException("No server connected, please connect to a server");
+			if (_connectedServer.Databases.Contains(database))
+				throw new DatabaseException("Database already exists in the server");
 			_databasesRepo.AddDatabase(_connectedServer, database);
 		}
 
@@ -213,10 +249,14 @@ namespace Domein.Controllers {
 		/// </summary>
 		/// <param name="database">The database to remove.</param>
 		/// <exception cref="DatabaseException"></exception>
-		public void RemoveDatabase(Database database) {
-			if (_connectedServer == null || !IsServerConnected) throw new DatabaseException("No server connected, please connect to a server");
-			if (ConnectedDatabase == null) throw new DatabaseException("No database connected");
-			if (ConnectedDatabase.Equals(database)) ConnectedDatabase = null;
+		public void RemoveDatabase(Database database)
+		{
+			if (_connectedServer == null || !IsServerConnected)
+				throw new DatabaseException("No server connected, please connect to a server");
+			if (ConnectedDatabase == null)
+				throw new DatabaseException("No database connected");
+			if (ConnectedDatabase.Equals(database))
+				ConnectedDatabase = null;
 			_databasesRepo.RemoveDatabase(_connectedServer, database);
 		}
 	}

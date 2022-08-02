@@ -1,0 +1,65 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <AlternationConverter x:Key="BackgroundConverter">
+        <SolidColorBrush>#32322C</SolidColorBrush>
+        <SolidColorBrush>#45453F</SolidColorBrush>
+    </AlternationConverter>
+
+    <SolidColorBrush x:Key="DEFAULT_WHITE" Color="#d9d9d9" />
+    <SolidColorBrush x:Key="DEFAULT_BLUE" Color="#3B6584" />
+    <SolidColorBrush x:Key="DEFAULT_DARKER_DARK" Color="#32322C" />
+    <SolidColorBrush x:Key="DEFAULT_LIGHT_DARK" Color="#45453F" />
+
+    <Style x:Key="labelStyle" TargetType="Label">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="FontSize" Value="35" />
+    </Style>
+    <Style x:Key="defaultListBoxItem" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Padding" Value="12,10,0,10" />
+        <Setter Property="FontWeight" Value="Regular" />
+    </Style>
+    <Style x:Key="breadCrumbStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Padding" Value="12,6,0,6" />
+        <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+    <Style x:Key="labelNavigationStyle" TargetType="Label">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+    </Style>
+    <Style x:Key="borderNavigationStyle" TargetType="Border">
+        <Setter Property="BorderThickness" Value="0,0,0,4" />
+        <Setter Property="BorderBrush" Value="{StaticResource DEFAULT_BLUE}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="False">
+                <Setter Property="BorderBrush" Value="Transparent" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style
+        x:Key="tabItemNavigationStyle"
+        BasedOn="{StaticResource MaterialDesignNavigationRailTabItem}"
+        TargetType="TabItem">
+        <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
+        <Setter Property="MaxWidth" Value="240" />
+        <Setter Property="MinWidth" Value="200" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="Transparent" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="navigationTabControlStyle" TargetType="TabControl">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+</ResourceDictionary>

@@ -5,9 +5,11 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Domein.Controllers {
+namespace Domein.Controllers
+{
 
-	public class DomeinController {
+	public class DomeinController
+	{
 		public readonly DatabaseController DatabaseController;
 		/// <summary>
 		/// Get the connected database.
@@ -18,7 +20,8 @@ namespace Domein.Controllers {
 		/// </summary>
 		public bool IsDatabaseConnected => DatabaseController.IsDatabaseConnected;
 
-		public DomeinController(DatabaseController databaseController) {
+		public DomeinController(DatabaseController databaseController)
+		{
 			this.DatabaseController = databaseController;
 		}
 
@@ -27,8 +30,10 @@ namespace Domein.Controllers {
 		/// </summary>
 		/// <param name="obj">The object that needs to be converted.</param>
 		/// <returns>The string representation of the given object.</returns>
-		public static string ToJson(object obj) {
-			var jsonConvertSettings = new JsonSerializerSettings {
+		public static string ToJson(object obj)
+		{
+			var jsonConvertSettings = new JsonSerializerSettings
+			{
 				MaxDepth = null
 			};
 			return JsonConvert.SerializeObject(obj, Formatting.Indented, jsonConvertSettings);
@@ -42,7 +47,7 @@ namespace Domein.Controllers {
 		public Table SqlQuery(string query) => DatabaseController.SqlQuery(query);
 
 		/// <summary>
-		/// Get the list of server from the databaseController.
+		/// Get the list of servers from the databaseController.
 		/// </summary>
 		/// <returns>All the available servers from the serverList.</returns>
 		public List<Server> GetServers() => DatabaseController.GetServers().ToList();
@@ -97,5 +102,11 @@ namespace Domein.Controllers {
 		/// <param name="database">The database to remove.</param>
 		/// <exception cref="DatabaseException"></exception>
 		public void RemoveDatabase(Database database) => Validate.ValidateObject(parameter: database, callBack: DatabaseController.RemoveDatabase, errorMessage: "Database can't be empty");
+
+		/// <summary>
+		/// Get the list of server from the databaseController.
+		/// </summary>
+		/// <returns>All the available servers from the serverList.</returns>
+		public List<Database> GetDatabasesFromServer() => SqlQuery("show databases;").Rows.Select(row => row.Items).Select(dbName => new Database(dbName.First().ToString())).ToList();
 	}
 }

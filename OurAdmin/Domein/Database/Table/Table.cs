@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace Domein.DataBase.DataTable {
+namespace Domein.DataBase.DataTable
+{
 
-	public class Table {
+	public class Table
+	{
+		public string Name { get; set; }
 		public List<Row> Rows { get; }
 		public HashSet<Column> Columns { get; }
 		public DataRelationCollection Relations { get; set; }
 
-		public Table() {
+		public Table()
+		{
 			this.Rows = new();
 			this.Columns = new();
 		}
@@ -23,13 +27,15 @@ namespace Domein.DataBase.DataTable {
 
 		public void RemoveColumn(Column column) => Columns.Remove(column);
 
-		public override bool Equals(object obj) {
+		public override bool Equals(object obj)
+		{
 			return obj is Table table &&
 				   EqualityComparer<List<Row>>.Default.Equals(Rows, table.Rows) &&
 				   EqualityComparer<HashSet<Column>>.Default.Equals(Columns, table.Columns);
 		}
 
-		public override int GetHashCode() {
+		public override int GetHashCode()
+		{
 			return HashCode.Combine(Rows, Columns);
 		}
 	}
