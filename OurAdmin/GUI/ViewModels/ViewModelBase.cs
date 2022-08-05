@@ -2,25 +2,19 @@
 using Domein.DataBase;
 using Domein.DataBase.DataTable;
 using GUI.Views.ViewClasses;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace GUI.ViewModels
 {
 	public class ViewModelBase : INotifyPropertyChanged
 	{
-		public DomeinController domeinController;
 
-		public ObservableCollection<Server> ServerList => new(domeinController.GetServers().OrderBy(server => server.Host.Length));
-		public ObservableCollection<Database> DatabaseList => new(domeinController.GetDatabasesFromServer().OrderBy(database => database.Name.Length));
+		public ObservableCollection<Server> ServerList => new(DomeinController.GetServers().OrderBy(server => server.Host.Length));
+		public ObservableCollection<Database> DatabaseList => new(DomeinController.GetDatabasesFromServer().OrderBy(database => database.Name.Length));
 
 		public BreadCrumb NavigationBreadCrumb => new BreadCrumb(server: _selectedServer, database: _selectedDatabase, table: _selectedTable);
 

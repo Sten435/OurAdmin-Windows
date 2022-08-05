@@ -1,4 +1,5 @@
 ﻿using Domein.DataBase;
+using Domein.DataBase.Exceptions;
 using MySqlConnector;
 using ReposInterface;
 using System;
@@ -15,11 +16,11 @@ namespace Repository
 		private Database _selectedDatabase {
 			get; set;
 		}
-		private DatabaseType databaseType;
+		public DatabaseType DatabaseType { get; set; }
 
 		public ServerRepo(DatabaseType _databaseType)
 		{
-			databaseType = _databaseType;
+			this.DatabaseType = _databaseType;
 			_serverList = new HashSet<Server>();
 		}
 
@@ -63,23 +64,32 @@ namespace Repository
 		/// <returns></returns>
 		public DataTable SqlQuery(Server server, string query)
 		{
-			if (databaseType == DatabaseType.MYSQL)
+			try
 			{
-				using var connection = new MySqlConnection(server.ConnectionString);
-				connection.Open();
+				if (DatabaseType == DatabaseType.MYSQL)
+				{
+					using var connection = new MySqlConnection(server.ConnectionString);
+					connection.Open();
 
-				if (_selectedDatabase != null && connection.Database != _selectedDatabase.Name)
-					connection.ChangeDatabase(_selectedDatabase.Name);
+					if (_selectedDatabase != null && connection.Database != _selectedDatabase.Name)
+						connection.ChangeDatabase(_selectedDatabase.Name);
 
-				using var command = new MySqlCommand(query.Replace(";", ""), connection);
-				using DataTable dataTable = new();
-				using MySqlDataAdapter MysqlDataAdapter = new(command);
+					using var command = new MySqlCommand(query.Replace(";", ""), connection);
+					using DataTable dataTable = new();
+					using MySqlDataAdapter MysqlDataAdapter = new(command);
 
-				MysqlDataAdapter.Fill(dataTable);
+					MysqlDataAdapter.Fill(dataTable);
 
-				return dataTable;
-			} else
-				throw new NotImplementedException();
+					return dataTable;
+				} else
+					throw new NotImplementedException();
+			} catch (Exception error)
+			{
+				if (error is MySqlException)
+				{
+					throw new DatabaseException("");
+				}
+			}
 		}
 
 		/// <summary>
@@ -90,6 +100,11 @@ namespace Repository
 		public void UseDatabase(Server server, Database database)
 		{
 			_selectedDatabase = database;
+		}
+
+		public void SetName(Domein.DataBase.DatabaseType value)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

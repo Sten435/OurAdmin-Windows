@@ -1,7 +1,6 @@
 ﻿using Domein.DataBase;
 using Domein.DataBase.DataTable;
 using Domein.DataBase.Exceptions;
-using Domein.DataBase.Sql;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ReposInterface;
 using Repository;
@@ -15,7 +14,6 @@ namespace Domein.Controllers.Tests
 	{
 		private IServerInfo ServerRepo;
 		private DatabaseController databaseController;
-		private DomeinController domeinController;
 
 		private Server server1;
 		private Server server2;
@@ -35,7 +33,7 @@ namespace Domein.Controllers.Tests
 		{
 			ServerRepo = new ServerRepo(DatabaseType.MYSQL);
 			databaseController = new(ServerRepo);
-			domeinController = new(databaseController);
+			DomeinController.DatabaseController = databaseController;
 
 			tables = new();
 
@@ -55,30 +53,30 @@ namespace Domein.Controllers.Tests
 		public void OpenConnectionToServer()
 		{
 			//Check that you can't connect to a database if an other database is already connected.
-			domeinController.AddServer(server2);
-			domeinController.OpenConnectionToServer(server2);
-			domeinController.CloseConnectionToServer();
-			domeinController.OpenConnectionToServer(server2);
+			DomeinController.AddServer(server2);
+			DomeinController.OpenConnectionToServer(server2);
+			DomeinController.CloseConnectionToServer();
+			DomeinController.OpenConnectionToServer(server2);
 			Assert.ThrowsException<DatabaseException>(() =>
 			{
-				domeinController.OpenConnectionToServer(server2);
+				DomeinController.OpenConnectionToServer(server2);
 			});
-			domeinController.CloseConnectionToServer();
+			DomeinController.CloseConnectionToServer();
 		}
 
 		[TestMethod()]
 		public void CloseConnectionToServer()
 		{
 			//Check that you can't close a database if there is none connected.
-			domeinController.AddServer(server2);
-			domeinController.OpenConnectionToServer(server2);
-			domeinController.CloseConnectionToServer();
+			DomeinController.AddServer(server2);
+			DomeinController.OpenConnectionToServer(server2);
+			DomeinController.CloseConnectionToServer();
 			Assert.ThrowsException<DatabaseException>(() =>
 			{
-				domeinController.CloseConnectionToServer();
+				DomeinController.CloseConnectionToServer();
 			});
-			domeinController.OpenConnectionToServer(server2);
-			domeinController.CloseConnectionToServer();
+			DomeinController.OpenConnectionToServer(server2);
+			DomeinController.CloseConnectionToServer();
 		}
 
 		[TestMethod()]
@@ -87,43 +85,43 @@ namespace Domein.Controllers.Tests
 			//Check that you can't add servers that are not valid
 			Assert.ThrowsException<DatabaseException>(() =>
 			{
-				domeinController.AddServer(server1);
+				DomeinController.AddServer(server1);
 			});
-			domeinController.AddServer(server2);
+			DomeinController.AddServer(server2);
 		}
 
 		[TestMethod()]
 		public void RemoveServerTest()
 		{
 			//Check that you can't remove a server that does not exist.
-			domeinController.AddServer(server2);
+			DomeinController.AddServer(server2);
 			Assert.ThrowsException<DatabaseException>(() =>
 			{
-				domeinController.RemoveServer(server1);
+				DomeinController.RemoveServer(server1);
 			});
 
-			domeinController.RemoveServer(server2);
-			domeinController.AddServer(server2);
-			domeinController.OpenConnectionToServer(server2);
+			DomeinController.RemoveServer(server2);
+			DomeinController.AddServer(server2);
+			DomeinController.OpenConnectionToServer(server2);
 
 			Assert.ThrowsException<DatabaseException>(() =>
 			{
-				domeinController.RemoveServer(server2);
+				DomeinController.RemoveServer(server2);
 			});
 
-			domeinController.CloseConnectionToServer();
-			domeinController.RemoveServer(server2);
+			DomeinController.CloseConnectionToServer();
+			DomeinController.RemoveServer(server2);
 		}
 
 		[TestMethod()]
 		public void GetServersTest()
 		{
 			//Check that you get the inserted servers back.
-			domeinController.AddServer(server2);
-			domeinController.AddServer(server2);
-			domeinController.AddServer(server3);
+			DomeinController.AddServer(server2);
+			DomeinController.AddServer(server2);
+			DomeinController.AddServer(server3);
 
-			int serverCount = domeinController.GetServers().Count();
+			int serverCount = DomeinController.GetServers().Count();
 			Debug.WriteLine($"Amount of servers: {serverCount}");
 
 			if (serverCount != 2)
@@ -134,9 +132,9 @@ namespace Domein.Controllers.Tests
 		public void SqlQueryTest()
 		{
 			//Check if the query gives the correct reponse.
-			domeinController.AddServer(server2);
-			domeinController.OpenConnectionToServer(server2);
-			Table result = domeinController.SqlQuery("Show databases;");
+			DomeinController.AddServer(server2);
+			DomeinController.OpenConnectionToServer(server2);
+			Table result = DomeinController.SqlQuery("Show databases;");
 			if (result.Rows.Count == 0)
 				Assert.Fail();
 		}
@@ -145,12 +143,12 @@ namespace Domein.Controllers.Tests
 		public void UseDatabaseTest()
 		{
 			//Check that you can't use a non added database from the connected server.
-			domeinController.AddServer(server2);
-			domeinController.OpenConnectionToServer(server2);
+			DomeinController.AddServer(server2);
+			DomeinController.OpenConnectionToServer(server2);
 
 			Assert.ThrowsException<DatabaseException>(() =>
 			{
-				domeinController.UseDatabase(database2);
+				DomeinController.UseDatabase(database2);
 			});
 		}
 
@@ -158,35 +156,35 @@ namespace Domein.Controllers.Tests
 		public void AddDatabaseTest()
 		{
 			//Check that you can't add the same database to a server.
-			domeinController.AddServer(server3);
-			domeinController.OpenConnectionToServer(server3);
-			domeinController.AddDatabase(database3);
-			domeinController.AddDatabase(database2);
-			domeinController.UseDatabase(database3);
+			DomeinController.AddServer(server3);
+			DomeinController.OpenConnectionToServer(server3);
+			DomeinController.AddDatabase(database3);
+			DomeinController.AddDatabase(database2);
+			DomeinController.UseDatabase(database3);
 
 			Assert.ThrowsException<DatabaseException>(() =>
 			{
-				domeinController.AddDatabase(database3);
+				DomeinController.AddDatabase(database3);
 			});
 
-			domeinController.UseDatabase(database3);
+			DomeinController.UseDatabase(database3);
 		}
 
 		[TestMethod()]
 		public void RemoveDatabaseTest()
 		{
 			//Check you can't remove the same database you already removed.
-			domeinController.AddServer(server3);
-			domeinController.OpenConnectionToServer(server3);
-			domeinController.AddDatabase(database2);
-			domeinController.AddDatabase(database3);
-			domeinController.UseDatabase(database3);
-			domeinController.RemoveDatabase(database3);
+			DomeinController.AddServer(server3);
+			DomeinController.OpenConnectionToServer(server3);
+			DomeinController.AddDatabase(database2);
+			DomeinController.AddDatabase(database3);
+			DomeinController.UseDatabase(database3);
+			DomeinController.RemoveDatabase(database3);
 
 			Assert.ThrowsException<DatabaseException>(() =>
 			{
-				var connectedDb = domeinController.ConnectedDatabase;
-				domeinController.RemoveDatabase(database3);
+				var connectedDb = DomeinController.ConnectedDatabase;
+				DomeinController.RemoveDatabase(database3);
 			});
 		}
 	}

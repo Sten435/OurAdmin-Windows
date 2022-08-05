@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domein.DataBase.DataTable.Interfaces {
+﻿namespace Domein.DataBase.DataTable.Interfaces
+{
 	public interface IKey {
 	}
 }

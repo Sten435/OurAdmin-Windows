@@ -1,12 +1,7 @@
 ﻿using Domein.Controllers;
+using Domein.DataBase;
 using ReposInterface;
 using Repository;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -19,15 +14,21 @@ namespace GUI
 	{
 		private static IServerInfo ServerRepo;
 		private static DatabaseController databaseController;
-		private static DomeinController domeinController;
 
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
 			ServerRepo = new ServerRepo(DatabaseType.MYSQL);
 			databaseController = new(ServerRepo);
-			domeinController = new(databaseController);
+			DomeinController.DatabaseController = databaseController;
 
-			MainWindow = new MainWindow(domeinController);
+			Server server = new("localhost", new(user: "root", password: ""));
+			Database database = new("testdatabase");
+			DomeinController.AddServer(server);
+			DomeinController.OpenConnectionToServer(server);
+			DomeinController.AddDatabase(database);
+			DomeinController.UseDatabase(database);
+
+			MainWindow = new MainWindow();
 			MainWindow.Show();
 		}
 

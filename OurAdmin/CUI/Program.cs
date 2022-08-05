@@ -1,6 +1,5 @@
 ﻿using Domein.Controllers;
 using Domein.DataBase;
-using Domein.DataBase.DataTable;
 using ReposInterface;
 using Repository;
 using System;
@@ -14,7 +13,6 @@ namespace CUI
 	{
 		private static IServerInfo ServerRepo;
 		private static DatabaseController databaseController;
-		private static DomeinController domeinController;
 
 		private static void Main()
 		{
@@ -23,7 +21,7 @@ namespace CUI
 				Utility.ResetIndex();
 				ServerRepo = new ServerRepo(DatabaseType.MYSQL);
 				databaseController = new(ServerRepo);
-				domeinController = new(databaseController);
+				DomeinController.DatabaseController = databaseController;
 
 				string hostNaam;
 				UserInfo userInfo;
@@ -39,32 +37,32 @@ namespace CUI
 					server = new(hostNaam, userInfo);
 					server2 = new("testing server 2", userInfo);
 
-					domeinController.AddServer(server);
-					domeinController.AddServer(server2);
-					domeinController.OpenConnectionToServer(server);
+					DomeinController.AddServer(server);
+					DomeinController.AddServer(server2);
+					DomeinController.OpenConnectionToServer(server);
 
 					SelectDB();
 
 					while (true)
 					{
-						Table dataList = domeinController.SqlQuery(Utility.AskUser.ReadInput(prompt: "Type a query: ", promptColor: ConsoleColor.Cyan));
+						//Table dataList = DomeinController.SqlQuery(Utility.AskUser.ReadInput(prompt: "Type a query: ", promptColor: ConsoleColor.Cyan));
 
 						//Console.WriteLine(DomeinController.ToJson(dataList));
 
-						for (int i = 0; i < dataList.Rows.Count; i++)
-						{
-							for (int col = 0; col < dataList.Columns.Count; col++)
-							{
-								Console.WriteLine($"Name: {dataList.Rows[i].Items[col]}");
-								Console.WriteLine($"IsNull: {dataList.Columns.ToList()[col].IsNull}");
-								Console.WriteLine($"Type: {dataList.Columns.ToList()[col].Type}");
-								Console.WriteLine($"SqlType: {dataList.Columns.ToList()[col].SqlType}");
-								Console.WriteLine($"TypeAmount: {dataList.Columns.ToList()[col].TypeAmount}");
-								Console.WriteLine($"DefaultValue: {dataList.Columns.ToList()[col].DefaultValue}");
-								Console.WriteLine($"AutoIncrement: {dataList.Columns.ToList()[col].AutoIncrement}");
-								Console.WriteLine("------------------------------");
-							}
-						}
+						//for (int i = 0; i < dataList.Rows.Count; i++)
+						//{
+						//	for (int col = 0; col < dataList.Columns.Count; col++)
+						//	{
+						//		Console.WriteLine($"Name: {dataList.Rows[i].Items[col]}");
+						//		Console.WriteLine($"IsNull: {dataList.Columns.ToList()[col].IsNull}");
+						//		Console.WriteLine($"Type: {dataList.Columns.ToList()[col].Type}");
+						//		Console.WriteLine($"SqlType: {dataList.Columns.ToList()[col].SqlType}");
+						//		Console.WriteLine($"TypeAmount: {dataList.Columns.ToList()[col].TypeAmount}");
+						//		Console.WriteLine($"DefaultValue: {dataList.Columns.ToList()[col].DefaultValue}");
+						//		Console.WriteLine($"AutoIncrement: {dataList.Columns.ToList()[col].AutoIncrement}");
+						//		Console.WriteLine("------------------------------");
+						//	}
+						//}
 
 						Utility.AskUser.ReadKnop();
 						Console.Clear();
@@ -95,15 +93,15 @@ namespace CUI
 
 			void SelectDB()
 			{
-				List<string> databases = domeinController.GetDatabasesFromServer().Select(db => db.Name).ToList();
+				List<string> databases = DomeinController.GetDatabasesFromServer().Select(db => db.Name).ToList();
 				int selectedDatabase = Utility.OptieLijstConroller(databases, prompt: "Choose a database");
 				string databaseName = databases[selectedDatabase];
 
 				Database database = new(databaseName);
 				Database databaseOne = new(databaseName);
 
-				domeinController.AddDatabase(database);
-				domeinController.UseDatabase(databaseOne);
+				DomeinController.AddDatabase(database);
+				DomeinController.UseDatabase(databaseOne);
 			}
 		}
 	}

@@ -1,12 +1,15 @@
 ﻿using Domein.DataBase;
-using Domein.DataBase.DataTable;
-using Domein.DataBase.Sql;
 using System.Collections.Generic;
 using System.Data;
 
-namespace ReposInterface {
+namespace ReposInterface
+{
 
-	public interface IServerInfo {
+	public interface IServerInfo
+	{
+		public DatabaseType DatabaseType { get; set; }
+
+		public void SetName(DatabaseType value);
 
 		public HashSet<Server> GetServers();
 
@@ -20,6 +23,6 @@ namespace ReposInterface {
 
 		public void UseDatabase(Server server, Database database);
 
-		DataTable SqlQuery(Server server, string query);
+		public DataTable SqlQuery(Server server, string query);
 	}
 }

@@ -38,6 +38,20 @@ namespace Domein.Controllers
 			set => _connectedDatabase = value;
 		}
 
+		public List<string> GetTables()
+		{
+			if (_databasesRepo.DatabaseType == DatabaseType.MYSQL)
+			{
+				List<string> res = SqlQuery("SHOW TABLES;").Rows.Select(row => row.Items[0].ToString()).ToList();
+				return res;
+			} else
+			{
+				//
+			}
+
+			throw new DatabaseException("There is no Database Type currently selected.");
+		}
+
 		public DatabaseController(IServerInfo databasesRepo)
 		{
 			_databasesRepo = databasesRepo;

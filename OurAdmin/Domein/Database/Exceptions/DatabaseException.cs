@@ -1,9 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
 
-namespace Domein.DataBase.Exceptions {
+namespace Domein.DataBase.Exceptions
+{
 
 	public class DatabaseException : Exception {
 

@@ -2,7 +2,6 @@ using Domein.DataBase.Exceptions;
 using Domein.Validatie;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Domein.DataBase
 {
