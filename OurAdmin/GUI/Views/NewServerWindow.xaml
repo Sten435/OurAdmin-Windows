@@ -1,0 +1,112 @@
+﻿<Window
+    x:Class="GUI.Views.NewServerWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:GUI.Views"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="New Server"
+    Width="400"
+    Background="{StaticResource DEFAULT_DARKER_DARK}"
+    Closing="Window_Closing"
+    ResizeMode="NoResize"
+    SizeToContent="Height"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <StackPanel>
+        <Grid Margin="0,20,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <RadioButton
+                Name="databaseTypeMysql"
+                Grid.Column="0"
+                Padding="10,0,0,4"
+                HorizontalAlignment="Center"
+                Background="{StaticResource DEFAULT_HIGHLIGHT}"
+                Content="Mysql"
+                FontSize="20"
+                FontWeight="Bold"
+                Foreground="{StaticResource DEFAULT_WHITE}"
+                GroupName="DatabaseType"
+                IsChecked="True" />
+            <RadioButton
+                Grid.Column="1"
+                Padding="10,0,0,4"
+                HorizontalAlignment="Center"
+                Background="{StaticResource DEFAULT_HIGHLIGHT}"
+                Content="SQLServer"
+                FontSize="20"
+                FontWeight="Bold"
+                Foreground="{StaticResource DEFAULT_WHITE}"
+                GroupName="DatabaseType" />
+        </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBox
+                Name="Server"
+                Grid.Column="0"
+                VerticalAlignment="Bottom"
+                materialDesign:HintAssist.Hint="Server"
+                Style="{StaticResource inputTextBoxMysqlStyle}"
+                Text="localhost" />
+            <TextBox
+                Name="User"
+                Grid.Row="1"
+                Grid.Column="0"
+                VerticalAlignment="Bottom"
+                materialDesign:HintAssist.Hint="User"
+                Style="{StaticResource inputTextBoxMysqlStyle}"
+                Text="root" />
+            <TextBox
+                Name="Password"
+                Grid.Row="2"
+                Grid.Column="0"
+                VerticalAlignment="Bottom"
+                materialDesign:HintAssist.Hint="Password"
+                Style="{StaticResource inputTextBoxMysqlStyle}" />
+            <TextBox
+                Name="Port"
+                Grid.Row="3"
+                Grid.Column="0"
+                VerticalAlignment="Bottom"
+                materialDesign:HintAssist.Hint="Port"
+                PreviewTextInput="NumberValidationTextBox"
+                Style="{StaticResource inputTextBoxMysqlStyle}"
+                Text="3306" />
+            <TextBox
+                Name="Connection_String"
+                Grid.Row="0"
+                Grid.Column="0"
+                VerticalAlignment="Bottom"
+                materialDesign:HintAssist.Hint="Connection String"
+                Style="{StaticResource inputTextSqlServerStyle}" />
+            <Button
+                Grid.Row="4"
+                Grid.Column="0"
+                Width="85"
+                Height="45"
+                Margin="10"
+                HorizontalAlignment="Right"
+                Click="Button_Click"
+                FontSize="20">
+
+                <TextBlock
+                    Margin="10,0,10,4.2"
+                    Text="Save"
+                    TextDecorations="Underline" />
+            </Button>
+        </Grid>
+    </StackPanel>
+</Window>

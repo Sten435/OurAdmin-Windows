@@ -1,4 +1,8 @@
-﻿using GUI.ViewModels.Pages;
+﻿using Domein.Controllers;
+using GUI.ViewModels;
+using System;
+using System.Data;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace GUI.Views
@@ -11,7 +15,7 @@ namespace GUI.Views
 		public TablesPage()
 		{
 			InitializeComponent();
-			this.DataContext = new TablesViewModel();
+			this.DataContext = ViewModelBase.Instance;
 		}
 	}
 }

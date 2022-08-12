@@ -9,17 +9,15 @@ namespace GUI.Views.ViewClasses
 	{
 		private Server Server { get; set; }
 		private Database Database { get; set; }
-		private Table Table { get; set; }
 
 		public string Content { get; set; }
 
-		public BreadCrumb(Server server, Database database, Table table)
+		public BreadCrumb(Server server, Database database)
 		{
 			Server = server;
 			Database = database;
-			Table = table;
 
-			List<string> dataStringList = new List<string>() { Server?.Host.ToString(), Database?.Name.ToString(), Table?.Name.ToString() };
+			List<string> dataStringList = new List<string>() { Server?.Host.ToString(), Database?.Name.ToString()};
 			Content = string.Join(" > ", dataStringList.Where(str => !string.IsNullOrWhiteSpace(str)));
 
 		}

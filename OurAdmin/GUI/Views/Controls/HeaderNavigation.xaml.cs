@@ -11,6 +11,7 @@ namespace GUI.Views.Controls
 		public HeaderNavigation()
 		{
 			InitializeComponent();
+			this.DataContext = ViewModelBase.Instance;
 		}
 	}
 }

@@ -9,8 +9,6 @@ namespace ReposInterface
 	{
 		public DatabaseType DatabaseType { get; set; }
 
-		public void SetName(DatabaseType value);
-
 		public HashSet<Server> GetServers();
 
 		public void AddServer(Server server);

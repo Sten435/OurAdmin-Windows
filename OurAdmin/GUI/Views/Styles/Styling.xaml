@@ -3,13 +3,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
     <AlternationConverter x:Key="BackgroundConverter">
-        <SolidColorBrush>#32322C</SolidColorBrush>
+        <SolidColorBrush>#45453F</SolidColorBrush>
         <SolidColorBrush>#45453F</SolidColorBrush>
     </AlternationConverter>
 
     <SolidColorBrush x:Key="DEFAULT_WHITE" Color="#d9d9d9" />
     <SolidColorBrush x:Key="DEFAULT_BLUE" Color="#3B6584" />
     <SolidColorBrush x:Key="DEFAULT_DARKER_DARK" Color="#32322C" />
+    <SolidColorBrush x:Key="DEFAULT_HIGHLIGHT" Color="#3B6440" />
     <SolidColorBrush x:Key="DEFAULT_LIGHT_DARK" Color="#45453F" />
 
     <Style x:Key="labelStyle" TargetType="Label">
@@ -34,10 +35,15 @@
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsHitTestVisible, RelativeSource={RelativeSource Self}}" Value="false">
+                <Setter Property="Opacity" Value="0.4" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
     <Style x:Key="borderNavigationStyle" TargetType="Border">
         <Setter Property="BorderThickness" Value="0,0,0,4" />
-        <Setter Property="BorderBrush" Value="{StaticResource DEFAULT_BLUE}" />
+        <Setter Property="BorderBrush" Value="{StaticResource DEFAULT_HIGHLIGHT}" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="False">
                 <Setter Property="BorderBrush" Value="Transparent" />
@@ -61,5 +67,117 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <Style
+        x:Key="listBoxItemStyle"
+        BasedOn="{StaticResource defaultListBoxItem}"
+        TargetType="TextBlock">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                <Setter Property="TextDecorations" Value="Underline" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="FontSize" Value="22" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style
+        x:Key="inputTextBoxMysqlStyle"
+        BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}"
+        TargetType="TextBox">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Margin" Value="0,10" />
+        <Setter Property="Padding" Value="10,0,0,0" />
+        <Setter Property="materialDesign:HintAssist.Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="materialDesign:HintAssist.HintOpacity" Value=".7" />
+        <Setter Property="CaretBrush" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsChecked, ElementName=databaseTypeMysql}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsChecked, ElementName=databaseTypeMysql}" Value="False">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style
+        x:Key="inputTextSqlServerStyle"
+        BasedOn="{StaticResource inputTextBoxMysqlStyle}"
+        TargetType="TextBox">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsChecked, ElementName=databaseTypeMysql}" Value="True">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsChecked, ElementName=databaseTypeMysql}" Value="False">
+                <Setter Property="Visibility" Value="Visible" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style BasedOn="{StaticResource MaterialDesignComboBox}" TargetType="ComboBox">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="Cursor" Value="Hand" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="Button">
+        <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{StaticResource DEFAULT_HIGHLIGHT}" CornerRadius="{TemplateBinding Border.CornerRadius}">
+                        <ContentPresenter
+                            x:Name="contentPresenter"
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Border.CornerRadius" Value="4" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="Cursor" Value="Hand" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style TargetType="DataGridCell">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding}" Value="NO TABLES FOUND">
+                <Setter Property="IsHitTestVisible" Value="False" />
+            </DataTrigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="Transparent" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="False">
+                <Setter Property="Background" Value="Transparent" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{StaticResource DEFAULT_HIGHLIGHT}" />
+            </Trigger>
+            <Trigger Property="IsFocused" Value="False">
+                <Setter Property="Foreground" Value="White" />
+            </Trigger>
+            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="false">
+                <Setter Property="Cursor" Value="Hand" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="newServerStyle" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="Cursor" Value="Hand" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 </ResourceDictionary>

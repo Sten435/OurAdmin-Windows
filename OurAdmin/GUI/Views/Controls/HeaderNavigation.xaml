@@ -9,14 +9,17 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:ViewModelBase}"
     mc:Ignorable="d">
     <Grid>
-        <StackPanel>
+        <StackPanel Orientation="Vertical">
             <StackPanel
                 Margin="0,25,0,20"
                 HorizontalAlignment="Center"
                 Orientation="Horizontal">
                 <TextBlock Name="selectedServer" Text="{Binding NavigationBreadCrumb.Content}" />
             </StackPanel>
-            <TabControl Style="{StaticResource navigationTabControlStyle}">
+            <TabControl
+                IsHitTestVisible="{Binding IsServerSelected}"
+                SelectedIndex="{Binding SelectedTabItemIndex}"
+                Style="{StaticResource navigationTabControlStyle}">
                 <TabItem Style="{StaticResource tabItemNavigationStyle}">
                     <TabItem.Header>
                         <Border Style="{StaticResource borderNavigationStyle}">
@@ -25,33 +28,21 @@
                     </TabItem.Header>
                     <views:TablesPage />
                 </TabItem>
-                <TabItem Style="{StaticResource tabItemNavigationStyle}">
+                <TabItem IsHitTestVisible="{Binding IsTableSelected}" Style="{StaticResource tabItemNavigationStyle}">
                     <TabItem.Header>
                         <Border Style="{StaticResource borderNavigationStyle}">
                             <Label Content="Structuur" Style="{StaticResource labelNavigationStyle}" />
                         </Border>
                     </TabItem.Header>
+                    <views:StructurePage />
                 </TabItem>
-                <TabItem Style="{StaticResource tabItemNavigationStyle}">
+                <TabItem IsHitTestVisible="{Binding IsDataBaseSelected}" Style="{StaticResource tabItemNavigationStyle}">
                     <TabItem.Header>
                         <Border Style="{StaticResource borderNavigationStyle}">
                             <Label Content="SQL Query" Style="{StaticResource labelNavigationStyle}" />
                         </Border>
                     </TabItem.Header>
-                </TabItem>
-                <TabItem Style="{StaticResource tabItemNavigationStyle}">
-                    <TabItem.Header>
-                        <Border Style="{StaticResource borderNavigationStyle}">
-                            <Label Content="ERD" Style="{StaticResource labelNavigationStyle}" />
-                        </Border>
-                    </TabItem.Header>
-                </TabItem>
-                <TabItem Style="{StaticResource tabItemNavigationStyle}">
-                    <TabItem.Header>
-                        <Border Style="{StaticResource borderNavigationStyle}">
-                            <Label Content="Data" Style="{StaticResource labelNavigationStyle}" />
-                        </Border>
-                    </TabItem.Header>
+                    <views:SqlQueryPage />
                 </TabItem>
             </TabControl>
         </StackPanel>

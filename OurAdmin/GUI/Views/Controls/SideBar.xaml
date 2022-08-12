@@ -25,12 +25,12 @@
                     CornerRadius="10">
                     <ComboBox
                         Height="50"
-                        Padding="10,10,20,10"
+                        Padding="10,10,20,0"
                         materialDesign:ListBoxItemAssist.ShowSelection="False"
                         materialDesign:RippleAssist.IsDisabled="True"
                         BorderBrush="{StaticResource DEFAULT_WHITE}"
                         BorderThickness="0"
-                        ItemsSource="{Binding ServerList}"
+                        ItemsSource="{Binding ServerList, Mode=OneWay}"
                         SelectedItem="{Binding SelectedServer}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -48,6 +48,13 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                 </Border>
+                <TextBlock
+                    Margin="0,12"
+                    FontWeight="Normal"
+                    MouseLeftButtonUp="TextBlock_MouseLeftButtonUp"
+                    Style="{StaticResource newServerStyle}"
+                    Text="Add Server"
+                    TextDecorations="Underline" />
             </StackPanel>
             <ListBox
                 materialDesign:ListBoxItemAssist.ShowSelection="False"
@@ -58,8 +65,11 @@
                 <ListBox.ItemContainerStyle>
                     <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListBoxItem">
                         <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Cursor" Value="Hand" />
+                            </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{StaticResource DEFAULT_BLUE}" />
+                                <Setter Property="Background" Value="{StaticResource DEFAULT_HIGHLIGHT}" />
                                 <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
                                 <Setter Property="IsHitTestVisible" Value="False" />
                             </Trigger>
@@ -70,19 +80,7 @@
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Name}">
-                            <TextBlock.Style>
-                                <Style BasedOn="{StaticResource defaultListBoxItem}" TargetType="TextBlock">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
-                                            <Setter Property="TextDecorations" Value="Underline" />
-                                            <Setter Property="FontWeight" Value="SemiBold" />
-                                            <Setter Property="FontSize" Value="22" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
+                        <TextBlock Style="{StaticResource listBoxItemStyle}" Text="{Binding Name}" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

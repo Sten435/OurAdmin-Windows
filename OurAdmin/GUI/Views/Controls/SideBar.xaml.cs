@@ -1,4 +1,5 @@
 ﻿using GUI.ViewModels;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace GUI.Views.Controls
@@ -11,6 +12,15 @@ namespace GUI.Views.Controls
 		public SideBar()
 		{
 			InitializeComponent();
+			this.DataContext = ViewModelBase.Instance;
+		}
+
+		private void TextBlock_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			NewServerWindow newServer = new();
+			newServer.Show();
+			var myWindow = Window.GetWindow(this);
+			myWindow.Close();
 		}
 	}
 }

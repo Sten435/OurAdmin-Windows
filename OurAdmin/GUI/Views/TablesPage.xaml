@@ -3,38 +3,130 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pages="clr-namespace:GUI.ViewModels.Pages"
-    d:DataContext="{d:DesignInstance Type=pages:TablesViewModel}"
+    xmlns:viewmodels="clr-namespace:GUI.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:ViewModelBase}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-
-    <DataGrid
-        HorizontalAlignment="Center"
-        VerticalAlignment="Center"
-        HorizontalContentAlignment="Center"
-        VerticalContentAlignment="Center"
-        AutoGenerateColumns="False"
-        Background="Transparent"
-        ItemsSource="{Binding Tables}">
-        <DataGrid.Columns>
-            <DataGridTextColumn>
-                <DataGridTextColumn.ElementStyle>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Background" Value="Yellow" />
+    <Grid Margin="0,50,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".02*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width=".02*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="1">
+            <DataGrid
+                Height="550"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                AlternatingRowBackground="{StaticResource DEFAULT_DARKER_DARK}"
+                AlternationCount="2"
+                AutoGenerateColumns="False"
+                Background="{StaticResource DEFAULT_DARKER_DARK}"
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                CanUserReorderColumns="False"
+                CanUserResizeColumns="False"
+                CanUserResizeRows="False"
+                ColumnWidth="*"
+                IsReadOnly="True"
+                ItemsSource="{Binding Tables}"
+                OverridesDefaultStyle="True"
+                RowBackground="{StaticResource DEFAULT_LIGHT_DARK}"
+                SelectedValue="{Binding SelectedTable}">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn CanUserResize="False" CanUserSort="True">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock FontSize="20" Text="Table" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Background="Transparent"
+                                    BorderBrush="Transparent"
+                                    BorderThickness="0">
+                                    <TextBlock Padding="18,10" Text="{Binding}" />
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="FontSize" Value="24" />
                     </Style>
-                </DataGridTextColumn.ElementStyle>
-                <DataGridTextColumn.HeaderStyle>
-                    <Style TargetType="DataGridColumnHeader">
-                        <Setter Property="Background" Value="Yellow" />
-                    </Style>
-                </DataGridTextColumn.HeaderStyle>
-            </DataGridTextColumn>
-            <DataGridTextColumn Binding="{Binding Table}" Header="Table" />
-            <DataGridTextColumn Binding="{Binding Actie}" Header="Actie" />
-            <DataGridTextColumn Binding="{Binding Rows}" Header="Rows" />
-            <DataGridTextColumn Binding="{Binding Size}" Header="Size" />
-        </DataGrid.Columns>
-    </DataGrid>
+                </DataGrid.RowStyle>
+            </DataGrid>
+            <!--<ListBox
+            MaxHeight="365"
+            materialDesign:ListBoxItemAssist.ShowSelection="False"
+            AlternationCount="2"
+            IsHitTestVisible="{Binding CanSelectDatabase}"
+            ItemsSource="{Binding Tables}"
+            SelectedValue="{Binding SelectedTable}">
+            <ListBox.ItemContainerStyle>
+                <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListBoxItem">
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{StaticResource DEFAULT_HIGHLIGHT}" />
+                            <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+                            <Setter Property="IsHitTestVisible" Value="False" />
+                        </Trigger>
+                    </Style.Triggers>
+                    <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Self}, Path=(ItemsControl.AlternationIndex), Converter={StaticResource BackgroundConverter}}" />
+                    <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Style="{StaticResource listBoxItemStyle}" Text="{Binding}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>-->
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button
+                    Width="100"
+                    Height="45"
+                    Margin="0,45,0,0"
+                    Command="{Binding DropTable}"
+                    FontSize="20">
+                    <TextBlock TextDecorations="Underline">
+                        Drop
+                    </TextBlock>
+                </Button>
+            </StackPanel>
+            <Grid Margin="0,50,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width=".2*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Create Table" />
+                <TextBox
+                    Grid.Column="0"
+                    Margin="5,0,0,0"
+                    VerticalAlignment="Bottom"
+                    materialDesign:HintAssist.Hint="Carbrands"
+                    Foreground="{StaticResource DEFAULT_WHITE}"
+                    MaxLength="64"
+                    MaxLines="1"
+                    Text="{Binding NewTableToAdd}" />
+                <Button
+                    Grid.Column="1"
+                    Width="85"
+                    Height="45"
+                    Margin="45,25,0,0"
+                    HorizontalAlignment="Right"
+                    Command="{Binding AddTable}"
+                    FontSize="20">
+                    <TextBlock TextDecorations="Underline">
+                        Go
+                    </TextBlock>
+                </Button>
+            </Grid>
+        </StackPanel>
+    </Grid>
 </UserControl>

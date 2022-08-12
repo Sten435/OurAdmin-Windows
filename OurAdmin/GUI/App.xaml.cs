@@ -1,5 +1,6 @@
 ﻿using Domein.Controllers;
 using Domein.DataBase;
+using GUI.Views;
 using ReposInterface;
 using Repository;
 using System.Windows;
@@ -21,22 +22,14 @@ namespace GUI
 			databaseController = new(ServerRepo);
 			DomeinController.DatabaseController = databaseController;
 
-			Server server = new("localhost", new(user: "root", password: ""));
-			Database database = new("testdatabase");
-			DomeinController.AddServer(server);
-			DomeinController.OpenConnectionToServer(server);
-			DomeinController.AddDatabase(database);
-			DomeinController.UseDatabase(database);
-
-			MainWindow = new MainWindow();
+			MainWindow = new NewServerWindow();
 			MainWindow.Show();
 		}
 
 		private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
 		{
-			MessageBox.Show("An unhandled exception just occurred: " + e.Exception.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Warning);
+			MessageBox.Show(e.Exception.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Warning);
 			e.Handled = true;
 		}
-
 	}
 }

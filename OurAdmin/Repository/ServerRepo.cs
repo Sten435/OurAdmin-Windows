@@ -87,8 +87,10 @@ namespace Repository
 			{
 				if (error is MySqlException)
 				{
-					throw new DatabaseException("");
+					throw new DatabaseException(error.Message);
 				}
+
+				throw new Exception(error.Message);
 			}
 		}
 
@@ -100,11 +102,6 @@ namespace Repository
 		public void UseDatabase(Server server, Database database)
 		{
 			_selectedDatabase = database;
-		}
-
-		public void SetName(Domein.DataBase.DatabaseType value)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

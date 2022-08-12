@@ -1,4 +1,5 @@
 ﻿using GUI.ViewModels;
+using System;
 using System.Windows.Controls;
 
 namespace GUI.Views
