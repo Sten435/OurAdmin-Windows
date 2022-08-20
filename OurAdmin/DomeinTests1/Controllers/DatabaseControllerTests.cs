@@ -41,7 +41,7 @@ namespace Domein.Controllers.Tests
 			database2 = new("testDatabase2");
 			database3 = new("testDatabase3");
 
-			user2 = new("root", "");
+			user2 = new("root", string.Empty);
 			user3 = new("user", "banz");
 
 			server1 = null;

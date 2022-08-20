@@ -16,6 +16,19 @@ namespace GUI.Views
 		{
 			InitializeComponent();
 			this.DataContext = ViewModelBase.Instance;
+			newTable_TextChanged(null, null);
+		}
+
+		private void newTable_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			if (string.IsNullOrEmpty(newTable.Text))
+			{
+				goBtn.IsEnabled = false;
+				goBtn.Opacity = 0.4;
+				return;
+			}
+			goBtn.IsEnabled = true;
+			goBtn.Opacity = 1;
 		}
 	}
 }

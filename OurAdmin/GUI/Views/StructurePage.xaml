@@ -17,9 +17,44 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width=".02*" />
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="1">
+        <DockPanel Grid.Column="1">
+            <StackPanel
+                Margin="0,20,0,0"
+                HorizontalAlignment="Right"
+                DockPanel.Dock="Bottom"
+                Orientation="Horizontal">
+                <Button
+                    Width="100"
+                    Height="45"
+                    Margin="0,0,45,0"
+                    Command="{Binding NewColumn}"
+                    FontSize="20">
+                    <TextBlock TextDecorations="Underline">
+                        Create
+                    </TextBlock>
+                </Button>
+                <Button
+                    Width="100"
+                    Height="45"
+                    Margin="0,0,45,0"
+                    Command="{Binding ChangeTableStructure}"
+                    FontSize="20"
+                    IsHitTestVisible="{Binding IsColumnSelected}">
+                    <TextBlock>
+                        Change
+                    </TextBlock>
+                </Button>
+                <Button
+                    Width="100"
+                    Height="45"
+                    Command="{Binding RemoveColumnFromTable}"
+                    FontSize="20"
+                    IsHitTestVisible="{Binding IsColumnSelected}">
+                    <TextBlock Text="Delete" />
+                </Button>
+            </StackPanel>
             <DataGrid
-                Height="550"
+                Height="680"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 HorizontalContentAlignment="Center"
@@ -36,7 +71,10 @@
                 ColumnWidth="*"
                 ItemsSource="{Binding ColumnStructure}"
                 OverridesDefaultStyle="True"
-                RowBackground="{StaticResource DEFAULT_LIGHT_DARK}">
+                RowBackground="{StaticResource DEFAULT_LIGHT_DARK}"
+                SelectedValue="{Binding SelectedColumn}"
+                SelectionMode="Single"
+                VerticalScrollBarVisibility="Auto">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn CanUserResize="False" CanUserSort="True">
                         <DataGridTemplateColumn.Header>
@@ -85,89 +123,6 @@
                     </Style>
                 </DataGrid.RowStyle>
             </DataGrid>
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button
-                    Width="100"
-                    Height="45"
-                    Margin="0,45,0,0"
-                    FontSize="20">
-                    <TextBlock TextDecorations="Underline">
-                        Change
-                    </TextBlock>
-                </Button>
-                <Button
-                    Width="100"
-                    Height="45"
-                    Margin="45,45,0,0"
-                    FontSize="20">
-                    <TextBlock Text="Delete" TextDecorations="Underline" />
-                </Button>
-            </StackPanel>
-            <Grid Margin="0,50,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width=".4*" />
-                    <ColumnDefinition Width=".7*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width=".8*" />
-                </Grid.ColumnDefinitions>
-                <Label Content="Create Column" />
-                <TextBox
-                    Grid.Column="0"
-                    Margin="5,0,20,0"
-                    VerticalAlignment="Bottom"
-                    materialDesign:HintAssist.Hint="Table name"
-                    Foreground="{StaticResource DEFAULT_WHITE}"
-                    MaxLength="64"
-                    MaxLines="1" />
-                <ComboBox
-                    Grid.Column="1"
-                    Margin="5,40,20,0"
-                    materialDesign:HintAssist.Hint="Type"
-                    ItemsSource="{Binding StructuurTypes}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-                <CheckBox
-                    Grid.Column="2"
-                    Margin="10,50,10,0"
-                    IsChecked="False">
-                    <TextBlock Text="Null" />
-                </CheckBox>
-                <CheckBox
-                    Grid.Column="3"
-                    Margin="5,50,25,0"
-                    IsChecked="False">
-                    <TextBlock Text="Primary Key" />
-                </CheckBox>
-                <ComboBox
-                    Grid.Column="4"
-                    Margin="5,40,25,0"
-                    materialDesign:HintAssist.Hint="Extra"
-                    ItemsSource="{Binding StructuurTypes}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-                <Button
-                    Grid.Column="6"
-                    Width="85"
-                    Height="45"
-                    Margin="45,25,0,0"
-                    HorizontalAlignment="Right"
-                    materialDesign:HintAssist.Hint="Type"
-                    FontSize="20">
-                    <TextBlock TextDecorations="Underline">
-                        Go
-                    </TextBlock>
-                </Button>
-            </Grid>
-        </StackPanel>
+        </DockPanel>
     </Grid>
 </UserControl>

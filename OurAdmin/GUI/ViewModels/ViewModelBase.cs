@@ -3,6 +3,7 @@ using Domein.DataBase;
 using Domein.DataBase.DataTable;
 using Domein.DataBase.Exceptions;
 using Domein.Validatie;
+using GUI.Views;
 using GUI.Views.ViewClasses;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,6 @@ namespace GUI.ViewModels
 		{
 			if (!DomeinController.IsDatabaseConnected)
 				return;
-			StructuurTypes = new List<string>() { "Int", "Varchar", "Bool", "Timestamp" };
 		}
 
 
@@ -52,7 +52,13 @@ namespace GUI.ViewModels
 			}
 		}
 
-		public List<string> StructuurTypes { get; set; }
+		public List<string> StructuurTypes {
+			get {
+				if (IsServerConnected)
+					return DomeinController.GetServerTypes();
+				return new();
+			}
+		}
 		public List<Server> ServerList {
 			get {
 				try
@@ -73,53 +79,8 @@ namespace GUI.ViewModels
 			}
 		}
 
-		public ICommand AddTable {
-			get {
-				return new RelayCommand((_none_) =>
-				{
-					AddTableToDatabase(_none_);
-					OnPropertyChanged(nameof(Tables));
-				});
-			}
-		}
-		public ICommand DropTable {
-			get {
-				return new RelayCommand((_none_) =>
-				{
-					RemoveTableFromDatabase(_none_);
-					OnPropertyChanged(nameof(Tables));
-				});
-			}
-		}
-
-		private static void AddTableToDatabase(object obj)
-		{
-			try
-			{
-				string table = NewTableToAdd.ToString();
-				if (!Validate.NullOrWhiteSpace(table))
-					DomeinController.WriteTableToDatabase(table);
-			} catch (Exception err)
-			{
-				MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-			}
-		}
-
-		private static void RemoveTableFromDatabase(object obj)
-		{
-			if(_selectedTable != null)
-			{
-				try
-				{
-					DomeinController.RemoveTableFromDatabase(_selectedTable);
-				} catch (Exception err)
-				{
-					MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-				}
-			}
-		}
-
-		public static string NewTableToAdd { get; set; } = "";
+		public static string NewTableToAdd { get; set; } = string.Empty;
+		public static string NewColumnName { get; set; } = string.Empty;
 
 		public List<Database> DatabaseList {
 			get {
@@ -149,7 +110,7 @@ namespace GUI.ViewModels
 				try
 				{
 					if (SelectedTable != null)
-						return new(DomeinController.GetColumnsFromTable(_selectedTable).Select(column => new StructureTableViewClass(column.Name, column.Type, column.IsNull, column.Extra)));
+						return new(DomeinController.GetColumnsFromTable(_selectedTable).Select(column => new StructureTableViewClass(column.Name, column.__Type, column.IsNull, column.Extra, column)));
 					return new();
 				} catch (Exception err)
 				{
@@ -174,7 +135,34 @@ namespace GUI.ViewModels
 				DomeinController.OpenConnectionToServer(value);
 				OnPropertyChanged(nameof(SelectedServer));
 				OnPropertyChanged(nameof(DatabaseList));
+				OnPropertyChanged(nameof(StructuurTypes));
 				OnPropertyChanged(nameof(NavigationBreadCrumb));
+			}
+		}
+
+		private bool _primaryKeyChecked = false;
+		public bool PrimaryKeyChecked {
+			get {
+				return _primaryKeyChecked;
+			}
+			set {
+				if (_primaryKeyChecked == value)
+					return;
+				_primaryKeyChecked = value;
+				OnPropertyChanged(nameof(PrimaryKeyChecked));
+			}
+		}
+
+		private bool _nullChecked = false;
+		public bool NullChecked {
+			get {
+				return _nullChecked;
+			}
+			set {
+				if (_nullChecked == value)
+					return;
+				_nullChecked = value;
+				OnPropertyChanged(nameof(PrimaryKeyChecked));
 			}
 		}
 
@@ -263,9 +251,127 @@ namespace GUI.ViewModels
 			}
 		}
 
+		public bool IsColumnSelected => SelectedColumn != null;
+
+		private static StructureTableViewClass _selectedColumn;
+		public StructureTableViewClass SelectedColumn {
+			get => _selectedColumn;
+			set {
+				if (_selectedColumn == value)
+					return;
+				_selectedColumn = value;
+				OnPropertyChanged(nameof(SelectedColumn));
+				OnPropertyChanged(nameof(IsColumnSelected));
+			}
+		}
+
+		#region Commands
+		public ICommand AddTable {
+			get {
+				return new RelayCommand((_none_) =>
+				{
+					AddTableToDatabase(_none_);
+					OnPropertyChanged(nameof(Tables));
+				});
+			}
+		}
+		public ICommand DropTable {
+			get {
+				return new RelayCommand((_none_) =>
+				{
+					RemoveTableFromDatabase(_none_);
+					OnPropertyChanged(nameof(Tables));
+				});
+			}
+		}
+		public ICommand NewColumn {
+			get {
+				return new RelayCommand((_none_) =>
+				{
+					OpenNewColumnWindow(_none_);
+					OnPropertyChanged(nameof(Tables));
+				});
+			}
+		}
+
+		public ICommand RemoveColumnFromTable {
+			get {
+				return new RelayCommand((_none_) =>
+				{
+					if (SelectedColumn == null)
+						return;
+					DomeinController.RemoveColumnFromTable(SelectedColumn.Name, DomeinController.SelectedTable);
+					OnPropertyChanged(nameof(ColumnStructure));
+				});
+			}
+		}
+
+		public ICommand ChangeTableStructure {
+			get {
+				return new RelayCommand((_none_) =>
+				{
+					ChangeTable(_none_);
+					OnPropertyChanged(nameof(Tables));
+				});
+			}
+		}
+
+		#endregion
+
+		#region Command Methods
+
+		private static void AddTableToDatabase(object obj)
+		{
+			try
+			{
+				string table = NewTableToAdd.ToString();
+				if (!Validate.NullOrWhiteSpace(table))
+					DomeinController.WriteTableToDatabase(table);
+			} catch (Exception err)
+			{
+				MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+			}
+		}
+
+		private static void ChangeTable(object obj)
+		{
+			try
+			{
+				if (_selectedColumn == null)
+					return;
+				NewColumnWindow newColumnWindow = new(_selectedColumn);
+				newColumnWindow.Show();
+			} catch (Exception err)
+			{
+				MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+			}
+		}
+
+		private static void RemoveTableFromDatabase(object obj)
+		{
+			if (_selectedTable != null)
+			{
+				try
+				{
+					DomeinController.RemoveTableFromDatabase(_selectedTable);
+				} catch (Exception err)
+				{
+					MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				}
+			}
+		}
+
+		private static void OpenNewColumnWindow(object obj)
+		{
+			NewColumnWindow newColumnWindow = new();
+			newColumnWindow.Show();
+		}
+
+		#endregion
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		protected void OnPropertyChanged(string propertyName)
+		public void OnPropertyChanged(string propertyName)
 		{
 			try
 			{

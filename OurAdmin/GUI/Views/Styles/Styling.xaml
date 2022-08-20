@@ -81,6 +81,31 @@
         </Style.Triggers>
     </Style>
     <Style
+        x:Key="inputTextBoxStyle"
+        BasedOn="{StaticResource MaterialDesignTextBox}"
+        TargetType="TextBox">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Margin" Value="0,10,0,5" />
+        <Setter Property="Padding" Value="10,0,0,0" />
+        <Setter Property="materialDesign:HintAssist.Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="materialDesign:HintAssist.HintOpacity" Value=".7" />
+        <Setter Property="CaretBrush" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style
+        x:Key="inputComboBoxStyle"
+        BasedOn="{StaticResource MaterialDesignComboBox}"
+        TargetType="ComboBox">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Margin" Value="0,10,10,5" />
+        <Setter Property="Padding" Value="10,0,0,0" />
+        <Setter Property="materialDesign:HintAssist.Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="materialDesign:HintAssist.HintOpacity" Value=".7" />
+        <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style
         x:Key="inputTextBoxMysqlStyle"
         BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}"
         TargetType="TextBox">
@@ -90,6 +115,27 @@
         <Setter Property="materialDesign:HintAssist.Foreground" Value="{StaticResource DEFAULT_WHITE}" />
         <Setter Property="materialDesign:HintAssist.HintOpacity" Value=".7" />
         <Setter Property="CaretBrush" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsChecked, ElementName=databaseTypeMysql}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsChecked, ElementName=databaseTypeMysql}" Value="False">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style
+        x:Key="inputComboBoxMysqlStyle"
+        BasedOn="{StaticResource MaterialDesignComboBox}"
+        TargetType="ComboBox">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Margin" Value="0,15,0,0" />
+        <Setter Property="Padding" Value="10,0,0,0" />
+        <Setter Property="materialDesign:HintAssist.Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="materialDesign:HintAssist.HintOpacity" Value=".7" />
         <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
         <Setter Property="BorderBrush" Value="Transparent" />
 
@@ -145,6 +191,9 @@
             <Trigger Property="IsMouseOver" Value="true">
                 <Setter Property="Cursor" Value="Hand" />
             </Trigger>
+            <DataTrigger Binding="{Binding IsHitTestVisible, RelativeSource={RelativeSource Self}}" Value="false">
+                <Setter Property="Opacity" Value="0.4" />
+            </DataTrigger>
         </Style.Triggers>
     </Style>
     <Style TargetType="DataGridCell">

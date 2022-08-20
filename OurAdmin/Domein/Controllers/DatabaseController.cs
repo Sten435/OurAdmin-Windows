@@ -2,6 +2,7 @@ using Domein.DataBase;
 using Domein.DataBase.DataTable;
 using Domein.DataBase.Exceptions;
 using Domein.DataBase.Table;
+using Domein.Validatie;
 using ReposInterface;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,11 @@ namespace Domein.Controllers
 		/// </summary>
 		public bool IsDatabaseConnected => _connectedServer != null && _connectedDatabase != null;
 
+		public List<string> GetServerTypes()
+		{
+			return new() { "INT", "VARCHAR", "TEXT", "DATE", "TINYINT", "SMALLINT", "MEDIUMINT", "INT", "BIGINT", "DECIMAL", "FLOAT", "DOUBLE", "REAL", "BIT", "BOOLEAN", "SERIAL", "DATE", "DATETIME", "TIMESTAMP", "TIME", "YEAR", "CHAR", "VARCHAR", "TINYTEXT", "TEXT", "MEDIUMTEXT", "LONGTEXT", "BINARY", "VARBINARY", "TINYBLOB", "BLOB", "MEDIUMBLOB", "LONGBLOB", "ENUM", "SET", "GEOMETRY", "POINT", "LINESTRING", "POLYGON", "MULTIPOINT", "MULTILINESTRING", "MULTIPOLYGON", "GEOMETRYCOLLECTION", "JSON" };
+		}
+
 		private Database _connectedDatabase;
 
 		/// <summary>
@@ -52,7 +58,7 @@ namespace Domein.Controllers
 		/// <returns>List of columns where you can find data about them.</returns>
 		public List<Column> GetColumnsFromTable()
 		{
-			return GetColumnStructure($"SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE BINARY TABLE_NAME = '{DomeinController.SelectedTable}'").Columns.ToList();
+			return GetColumnStructure($"SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE BINARY TABLE_NAME = '{DomeinController.SelectedTable}' AND TABLE_SCHEMA = '{ConnectedDatabase.Name}'").Columns.ToList();
 		}
 
 		public void WriteTableToDatabase(string cleanedTable)
@@ -72,6 +78,42 @@ namespace Domein.Controllers
 			try
 			{
 				string query = $"DROP TABLE `{ConnectedDatabase}`.`{cleanedTable}`";
+				SqlQuery(query);
+			} catch (Exception err)
+			{
+				throw new DatabaseException(err.Message);
+			}
+		}
+
+		public void AddColumnToTable(Column newColumn, string selectedTable)
+		{
+			try
+			{
+				newColumn.__Type = newColumn.__Type.ToUpper();
+				newColumn.__DefaultValue = newColumn.__DefaultValue.ToString().ToUpper();
+
+				string typeLengthPart = (Validate.NullOrWhiteSpace(newColumn.__LengthValues) == false && (newColumn.__Type == "CHAR" || newColumn.__Type == "BINARY" || newColumn.__Type == "VARCHAR" || newColumn.__Type == "VARBINARY")) ? $"{newColumn.__Type}({newColumn.__LengthValues})" : $"{newColumn.__Type}";
+				string attributesPart = newColumn.__Attributes == "NONE" ? string.Empty : $"{newColumn.__Attributes}";
+				string __null = newColumn.IsNull == false ? $"NOT NULL" : $"NULL";
+				string __default = Validate.NullOrWhiteSpace(newColumn.__DefaultValue.ToString()) == true ? string.Empty : $"{(newColumn.__DefaultValue.ToString() == "AS DEFINED" ? $"DEFAULT '{newColumn.__AsDefined}'" : newColumn.__DefaultValue.ToString().ToUpper() == "NONE" ? string.Empty : $"DEFAULT {newColumn.__DefaultValue}")}";
+				string autoIncrement = newColumn.__AutoIncrement == false ? string.Empty : $"AUTO_INCREMENT";
+				string comment = Validate.NullOrWhiteSpace(newColumn.__Comments) == true ? string.Empty : $"COMMENT '{newColumn.__Comments}'";
+				string primaryKey = newColumn.__AutoIncrement == false ? string.Empty : $",ADD PRIMARY KEY (`{newColumn.Name.Trim()}`)";
+				string query = $"ALTER TABLE `{selectedTable.Trim()}` ADD `{newColumn.Name.Trim()}` {typeLengthPart} {attributesPart} {__null} {__default} {autoIncrement} {comment} {primaryKey}";
+
+				SqlQuery(query.Trim());
+			} catch (Exception err)
+			{
+				throw new DatabaseException(err.Message);
+			}
+		}
+
+		public void RemoveColumnFromTable(string columnName, string selectedTable)
+		{
+			try
+			{
+				string query = $"ALTER TABLE `{selectedTable.Trim()}` DROP COLUMN `{columnName.Trim()}`";
+
 				SqlQuery(query);
 			} catch (Exception err)
 			{
@@ -100,6 +142,16 @@ namespace Domein.Controllers
 			if (!IsDatabaseConnected)
 				throw new DatabaseException("There is currently no database connected");
 			throw new DatabaseException("There is currently no server connected");
+		}
+
+		public List<string> GetServerAttributes()
+		{
+			return new() { "NONE", "BINARY", "UNSIGNED", "UNSIGNED ZEROFILL", "on update CURRENT_TIMESTAMP" };
+		}
+
+		public List<string> GetServerDefaults()
+		{
+			return new() { "NONE", "AS DEFINED", "NULL", "CURRENT_TIMESTAMP" };
 		}
 
 
@@ -140,11 +192,11 @@ namespace Domein.Controllers
 						table.Relations = col.Table.ChildRelations;
 
 						column.Name = col.ColumnName;
-						column.Extra = col.AutoIncrement == true ? "autoincrement" : "";
+						column.Extra = col.AutoIncrement == true ? "autoincrement" : string.Empty;
 						column.IsNull = col.AllowDBNull;
 						column.TypeAmount = col.MaxLength;
-						column.DefaultValue = col.DefaultValue;
-						column.Type = col.DataType.Name;
+						column.__DefaultValue = col.DefaultValue;
+						column.__Type = col.DataType.Name;
 						column.SqlType = GetColumnType(query, column.Name);
 
 						rowData.Add(row[col]);
@@ -181,9 +233,12 @@ namespace Domein.Controllers
 
 					column.Name = resultItem.COLUMNNAME;
 					column.IsNull = resultItem.ISNULLABLE.ToUpper() == "YES" ? true : false;
-					column.Extra = resultItem.EXTRA;
-					column.DefaultValue = resultItem.COLUMNDEFAULT;
-					column.Type = resultItem.COLUMNTYPE;
+					column.Extra = resultItem.EXTRA.ToUpper().Contains("ON UPDATE CURRENT_TIMESTAMP") == false ? "" : "on update CURRENT_TIMESTAMP";
+					column.__DefaultValue = resultItem.COLUMNDEFAULT;
+					column.__AutoIncrement = resultItem.EXTRA == "auto_increment";
+					column.__Comments = resultItem.COLUMNCOMMENT;
+					column.__Attributes = column.Extra;
+					column.__Type = resultItem.COLUMNTYPE;
 					column.SqlType = resultItem.DATATYPE;
 					table.AddColumn(column);
 				}
@@ -204,7 +259,7 @@ namespace Domein.Controllers
 		{
 			if (!IsDatabaseConnected)
 				return "None";
-			string table = "";
+			string table = string.Empty;
 
 			DataTable dataTable = _databasesRepo.SqlQuery(_connectedServer, "show tables;");
 			//Todo minder checken op tables nu elke keer ddat er een column gecheked moet worden
@@ -235,7 +290,7 @@ namespace Domein.Controllers
 				}
 			}
 
-			if (table != "")
+			if (table != string.Empty)
 			{
 				dataTable = _databasesRepo.SqlQuery(_connectedServer, $"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name='{table}' AND COLUMN_NAME='{column}';"); // Get the sql datatype from the column.
 

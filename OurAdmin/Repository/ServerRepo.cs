@@ -74,7 +74,7 @@ namespace Repository
 					if (_selectedDatabase != null && connection.Database != _selectedDatabase.Name)
 						connection.ChangeDatabase(_selectedDatabase.Name);
 
-					using var command = new MySqlCommand(query.Replace(";", ""), connection);
+					using var command = new MySqlCommand(query.Replace(";", string.Empty), connection);
 					using DataTable dataTable = new();
 					using MySqlDataAdapter MysqlDataAdapter = new(command);
 
@@ -87,7 +87,7 @@ namespace Repository
 			{
 				if (error is MySqlException)
 				{
-					throw new DatabaseException(error.Message);
+					throw new DatabaseException($"There has been an error with the given query, please check the input fields.\n\n{error.Message}");
 				}
 
 				throw new Exception(error.Message);

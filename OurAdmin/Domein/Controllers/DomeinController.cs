@@ -29,6 +29,8 @@ namespace Domein.Controllers
 			DatabaseController.WriteTableToDatabase(cleanedTable);
 		}
 
+		public static List<string> GetServerTypes() => DatabaseController.GetServerTypes();
+
 		public static void RemoveTableFromDatabase(string selectedTable)
 		{
 			string cleanedTable = selectedTable.Trim().Replace(" ", "_");
@@ -41,7 +43,7 @@ namespace Domein.Controllers
 		/// </summary>
 		public static string SelectedTable {
 			get {
-				if (selectedTable == "")
+				if (selectedTable == string.Empty)
 					throw new DatabaseException("No table is selected");
 				else
 					return selectedTable;
@@ -78,6 +80,15 @@ namespace Domein.Controllers
 		/// </summary>
 		public static bool IsServerConnected => DatabaseController.IsServerConnected;
 
+		public static void AddColumnToTable(Column newColumn, string selectedTable)
+		{
+			DatabaseController.AddColumnToTable(newColumn, selectedTable);
+		}
+
+		public static void RemoveColumnFromTable(string columnName, string selectedTable)
+		{
+			DatabaseController.RemoveColumnFromTable(columnName, selectedTable);
+		}
 
 		/// <summary>
 		/// Get all tables from the currently connected database.
@@ -97,6 +108,16 @@ namespace Domein.Controllers
 				MaxDepth = null
 			};
 			return JsonConvert.SerializeObject(obj, Formatting.Indented, jsonConvertSettings);
+		}
+
+		public static List<string> GetServerAttributes()
+		{
+			return DatabaseController.GetServerAttributes();
+		}
+
+		public static List<string> GetServerDefaults()
+		{
+			return DatabaseController.GetServerDefaults();
 		}
 
 		/// <summary>
@@ -171,7 +192,7 @@ namespace Domein.Controllers
 		public static void RemoveDatabase(Database database) => Validate.ValidateObject(parameter: database, callBack: DatabaseController.RemoveDatabase, errorMessage: "Database can't be empty");
 
 
-		private static HashSet<string> wontAddDatabases = new() { "information_schema", "mysql", "performance_schema", "phpmyadmin" };
+		private static HashSet<string> wontAddDatabases = new() { "information_schema", "mysql", "performance_schema", "sys", "phpmyadmin" };
 		/// <summary>
 		/// Get the list of server from the databaseController.
 		/// </summary>

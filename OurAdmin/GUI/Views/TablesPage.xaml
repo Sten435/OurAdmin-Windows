@@ -37,7 +37,8 @@
                 ItemsSource="{Binding Tables}"
                 OverridesDefaultStyle="True"
                 RowBackground="{StaticResource DEFAULT_LIGHT_DARK}"
-                SelectedValue="{Binding SelectedTable}">
+                SelectedValue="{Binding SelectedTable}"
+                SelectionMode="Single">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn CanUserResize="False" CanUserSort="True">
                         <DataGridTemplateColumn.Header>
@@ -93,7 +94,8 @@
                     Height="45"
                     Margin="0,45,0,0"
                     Command="{Binding DropTable}"
-                    FontSize="20">
+                    FontSize="20"
+                    IsHitTestVisible="{Binding IsTableSelected}">
                     <TextBlock TextDecorations="Underline">
                         Drop
                     </TextBlock>
@@ -106,6 +108,7 @@
                 </Grid.ColumnDefinitions>
                 <Label Content="Create Table" />
                 <TextBox
+                    Name="newTable"
                     Grid.Column="0"
                     Margin="5,0,0,0"
                     VerticalAlignment="Bottom"
@@ -113,8 +116,10 @@
                     Foreground="{StaticResource DEFAULT_WHITE}"
                     MaxLength="64"
                     MaxLines="1"
-                    Text="{Binding NewTableToAdd}" />
+                    Text="{Binding NewTableToAdd}"
+                    TextChanged="newTable_TextChanged" />
                 <Button
+                    Name="goBtn"
                     Grid.Column="1"
                     Width="85"
                     Height="45"

@@ -17,4 +17,10 @@
 		<ProjectReference Include="..\Repository\Repository.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Page Update="Views\NewColumnWindow.xaml">
+	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	  </Page>
+	</ItemGroup>
+
 </Project>
