@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace GUI.ViewModels
 {
-    public class RelayCommand : ICommand
+    public class RelayCommand<T> : ICommand
     {
         #region Fields 
         readonly Action<object> _execute;

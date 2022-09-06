@@ -32,7 +32,7 @@ namespace Domein.Controllers.Tests
 		public void Initialize()
 		{
 			ServerRepo = new ServerRepo(DatabaseType.MYSQL);
-			databaseController = new(ServerRepo);
+			databaseController = new(ServerRepo, DatabaseType.MYSQL);
 			DomeinController.DatabaseController = databaseController;
 
 			tables = new();

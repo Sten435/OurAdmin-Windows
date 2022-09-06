@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,6 +42,9 @@ namespace GUI.ViewModels
 				}
 			}
 		}
+
+		public delegate void NotifyDatabaseSelectionChangedType();
+		public event NotifyDatabaseSelectionChangedType NotifyDatabaseSelectionChanged;
 
 		public List<string> Tables {
 			get {
@@ -79,8 +83,10 @@ namespace GUI.ViewModels
 			}
 		}
 
-		public static string NewTableToAdd { get; set; } = string.Empty;
-		public static string NewColumnName { get; set; } = string.Empty;
+		public static string NewTableToAdd { get; set; }
+		public static string NewDatabaseToAdd { get; set; }
+		public static string NewColumnName { get; set; }
+		public static string CustomSqlQueryText { get; set; }
 
 		public List<Database> DatabaseList {
 			get {
@@ -92,14 +98,15 @@ namespace GUI.ViewModels
 						DomeinController.AddDatabase(result[i]);
 					}
 					return result;
-				} catch (Exception)
+				} catch (Exception error)
 				{
 					if (IsServerConnected)
 					{
 						DomeinController.CloseConnectionToServer();
 						DomeinController.RemoveServer(DomeinController.GetServers().Find(server => server.Host == SelectedServer.Host));
 						OnPropertyChanged(nameof(ServerList));
-						MessageBox.Show("There is been an error connection to the server, please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+						MessageBox.Show(error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+						//MessageBox.Show("There is been an error connection to the server, please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 					}
 					return new();
 				}
@@ -110,7 +117,7 @@ namespace GUI.ViewModels
 				try
 				{
 					if (SelectedTable != null)
-						return new(DomeinController.GetColumnsFromTable(_selectedTable).Select(column => new StructureTableViewClass(column.Name, column.__Type, column.IsNull, column.Extra, column)));
+						return new(DomeinController.GetColumnsFromTable(_selectedTable).Select(column => new StructureTableViewClass(column.Name, column.__Type, column.IsNull, column.Extra, column)).ToList());
 					return new();
 				} catch (Exception err)
 				{
@@ -166,17 +173,6 @@ namespace GUI.ViewModels
 			}
 		}
 
-		private bool _canSelectDatabase = true;
-		public bool CanSelectDatabase {
-			get {
-				return _canSelectDatabase;
-			}
-			set {
-				_canSelectDatabase = value;
-				OnPropertyChanged(nameof(CanSelectDatabase));
-			}
-		}
-
 		private bool _isServerSelected = false;
 		public bool IsServerSelected {
 			get {
@@ -196,18 +192,41 @@ namespace GUI.ViewModels
 			}
 		}
 
+		private Visibility tablesPageVisibility = Visibility.Collapsed;
+		public Visibility TablesPageVisibility {
+			get {
+				if (IsDataBaseSelected)
+					return tablesPageVisibility;
+				return Visibility.Collapsed;
+			}
+			set => tablesPageVisibility = value;
+		}
+
+		private Visibility structurePageVisibility = Visibility.Collapsed;
+		public Visibility StructurePageVisibility {
+			get {
+				if (IsTableSelected)
+					return structurePageVisibility;
+				return Visibility.Collapsed;
+			}
+
+			set => structurePageVisibility = value;
+		}
+
+		private Visibility sqlQueryPageVisibility = Visibility.Collapsed;
+		public Visibility SqlQueryPageVisibility {
+			get {
+				if (IsDataBaseSelected)
+					return sqlQueryPageVisibility;
+				return Visibility.Collapsed;
+			}
+
+			set => sqlQueryPageVisibility = value;
+		}
+
 		public bool AnyServersAvailable => DomeinController.GetServers().Count > 0;
 
 		public bool IsServerConnected => DomeinController.IsServerConnected;
-
-		private int selectedTabItemIndex = 0;
-		public int SelectedTabItemIndex {
-			get => selectedTabItemIndex;
-			set {
-				selectedTabItemIndex = value;
-				OnPropertyChanged(nameof(SelectedTabItemIndex));
-			}
-		}
 
 		private Database _selectedDatabase;
 		public Database SelectedDatabase {
@@ -215,23 +234,28 @@ namespace GUI.ViewModels
 				return _selectedDatabase;
 			}
 			set {
-				if (_selectedDatabase == value || !CanSelectDatabase)
+				if (_selectedDatabase == value)
 					return;
 
 				//Async timeout that the user won't spam the database List.
 				Task.Run(() =>
 				{
-					CanSelectDatabase = false;
-					Thread.Sleep(20);
 					_selectedDatabase = value;
 					DomeinController.UseDatabase(value);
-					SelectedTabItemIndex = 0;
+
+					TablesPageVisibility = Visibility.Visible;
+					StructurePageVisibility = Visibility.Collapsed;
+					SqlQueryPageVisibility = Visibility.Collapsed;
+					NotifyDatabaseSelectionChanged?.Invoke();
+
+					OnPropertyChanged(nameof(TablesPageVisibility));
+					OnPropertyChanged(nameof(StructurePageVisibility));
+					OnPropertyChanged(nameof(SqlQueryPageVisibility));
 
 					OnPropertyChanged(nameof(SelectedDatabase));
 					OnPropertyChanged(nameof(NavigationBreadCrumb));
 					OnPropertyChanged(nameof(Tables));
 					OnPropertyChanged(nameof(IsDataBaseSelected));
-					CanSelectDatabase = true;
 				});
 			}
 		}
@@ -268,7 +292,7 @@ namespace GUI.ViewModels
 		#region Commands
 		public ICommand AddTable {
 			get {
-				return new RelayCommand((_none_) =>
+				return new RelayCommand<object>((_none_) =>
 				{
 					AddTableToDatabase(_none_);
 					OnPropertyChanged(nameof(Tables));
@@ -277,16 +301,51 @@ namespace GUI.ViewModels
 		}
 		public ICommand DropTable {
 			get {
-				return new RelayCommand((_none_) =>
+				return new RelayCommand<object>((_none_) =>
 				{
 					RemoveTableFromDatabase(_none_);
 					OnPropertyChanged(nameof(Tables));
 				});
 			}
 		}
+
+		public ICommand AddDatabase {
+			get {
+				return new RelayCommand<object>((_none_) =>
+				{
+					if (Validate.NullOrWhiteSpace(NewDatabaseToAdd))
+						return;
+					DomeinController.AddDatabaseToServer(NewDatabaseToAdd);
+					OnPropertyChanged(nameof(DatabaseList));
+				});
+			}
+		}
+
+		public ICommand RemoveDatabase {
+			get {
+				return new RelayCommand<object>((_none_) =>
+				{
+					if (!IsDataBaseSelected || SelectedDatabase == null)
+						return;
+					DomeinController.RemoveDatabaseFromServer(SelectedDatabase);
+					SelectedDatabase = null;
+					TablesPageVisibility = Visibility.Visible;
+					StructurePageVisibility = Visibility.Collapsed;
+					SqlQueryPageVisibility = Visibility.Collapsed;
+
+					OnPropertyChanged(nameof(TablesPageVisibility));
+					OnPropertyChanged(nameof(StructurePageVisibility));
+					OnPropertyChanged(nameof(SqlQueryPageVisibility));
+					OnPropertyChanged(nameof(NavigationBreadCrumb));
+					OnPropertyChanged(nameof(DatabaseList));
+					OnPropertyChanged(nameof(IsDataBaseSelected));
+				});
+			}
+		}
+
 		public ICommand NewColumn {
 			get {
-				return new RelayCommand((_none_) =>
+				return new RelayCommand<object>((_none_) =>
 				{
 					OpenNewColumnWindow(_none_);
 					OnPropertyChanged(nameof(Tables));
@@ -296,9 +355,9 @@ namespace GUI.ViewModels
 
 		public ICommand RemoveColumnFromTable {
 			get {
-				return new RelayCommand((_none_) =>
+				return new RelayCommand<object>((_none_) =>
 				{
-					if (SelectedColumn == null)
+					if (!IsColumnSelected || SelectedColumn == null)
 						return;
 					DomeinController.RemoveColumnFromTable(SelectedColumn.Name, DomeinController.SelectedTable);
 					OnPropertyChanged(nameof(ColumnStructure));
@@ -308,10 +367,70 @@ namespace GUI.ViewModels
 
 		public ICommand ChangeTableStructure {
 			get {
-				return new RelayCommand((_none_) =>
+				return new RelayCommand<object>((_none_) =>
 				{
 					ChangeTable(_none_);
 					OnPropertyChanged(nameof(Tables));
+				});
+			}
+		}
+
+		public ICommand SelectTablesPage {
+			get {
+				return new RelayCommand<object>((_none_) =>
+				{
+					TablesPageVisibility = Visibility.Visible;
+					StructurePageVisibility = Visibility.Collapsed;
+					SqlQueryPageVisibility = Visibility.Collapsed;
+
+					OnPropertyChanged(nameof(TablesPageVisibility));
+					OnPropertyChanged(nameof(StructurePageVisibility));
+					OnPropertyChanged(nameof(SqlQueryPageVisibility));
+				});
+			}
+		}
+
+		public ICommand SelectStructuurPage {
+			get {
+				return new RelayCommand<object>((_none_) =>
+				{
+					TablesPageVisibility = Visibility.Collapsed;
+					StructurePageVisibility = Visibility.Visible;
+					SqlQueryPageVisibility = Visibility.Collapsed;
+
+					OnPropertyChanged(nameof(TablesPageVisibility));
+					OnPropertyChanged(nameof(StructurePageVisibility));
+					OnPropertyChanged(nameof(SqlQueryPageVisibility));
+				});
+			}
+		}
+
+		public (List<string>, List<string>) ExecuteCustomSqlQuery {
+			get {
+				if (!Validate.NullOrWhiteSpace(CustomSqlQueryText))
+				{
+					Table table = DomeinController.SqlQuery(CustomSqlQueryText.Trim());
+
+					List<string> headerColumns = table.Columns.Select(column => column.Name).ToList();
+					List<string> resultRows = table.Rows.Select(row => row.Items[0]).ToList();
+
+						return (headerColumns, resultRows);
+				}
+				return new();
+			}
+		}
+
+		public ICommand SelectSqlQueryPage {
+			get {
+				return new RelayCommand<object>((_none_) =>
+				{
+					TablesPageVisibility = Visibility.Collapsed;
+					StructurePageVisibility = Visibility.Collapsed;
+					SqlQueryPageVisibility = Visibility.Visible;
+
+					OnPropertyChanged(nameof(TablesPageVisibility));
+					OnPropertyChanged(nameof(StructurePageVisibility));
+					OnPropertyChanged(nameof(SqlQueryPageVisibility));
 				});
 			}
 		}

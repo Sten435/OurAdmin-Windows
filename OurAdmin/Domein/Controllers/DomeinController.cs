@@ -19,6 +19,7 @@ namespace Domein.Controllers
 		/// Get the connected database.
 		/// </summary>
 		public static Database ConnectedDatabase => DatabaseController.ConnectedDatabase;
+		public static DatabaseType DatabaseType => DatabaseController.DatabaseType;
 
 		private static string selectedTable;
 
@@ -82,12 +83,30 @@ namespace Domein.Controllers
 
 		public static void AddColumnToTable(Column newColumn, string selectedTable)
 		{
-			DatabaseController.AddColumnToTable(newColumn, selectedTable);
+			DatabaseController.ExecuteActionToColumn(newColumn, selectedTable);
+		}
+
+		public static void AddDatabaseToServer(string databaseName)
+		{
+			DatabaseController.AddDatabaseToExternalServer(databaseName);
+			Database database = new(databaseName);
+			DatabaseController.AddDatabase(database);
+		}
+
+		public static void RemoveDatabaseFromServer(Database selectedDatabase)
+		{
+			DatabaseController.RemoveDatabaseFromExternalServer(selectedDatabase);
+			DatabaseController.RemoveDatabase(selectedDatabase);
 		}
 
 		public static void RemoveColumnFromTable(string columnName, string selectedTable)
 		{
 			DatabaseController.RemoveColumnFromTable(columnName, selectedTable);
+		}
+
+		public static void WriteChangeColumnToTable(Column column, string oldName, string selectedTable)
+		{
+			DatabaseController.WriteChangeColumnToTable(column, oldName, selectedTable);
 		}
 
 		/// <summary>
@@ -199,7 +218,12 @@ namespace Domein.Controllers
 		/// <returns>All the available servers from the serverList.</returns>
 		public static List<Database> GetDatabasesFromServer()
 		{
-			return SqlQuery("show databases;").Rows.Select(row => row.Items).Where(dbName => !wontAddDatabases.Contains(dbName.First())).Select(dbName => new Database(dbName.First().ToString())).ToList();
+			if(DatabaseType == DatabaseType.MYSQL)
+			{
+				var databases = SqlQuery("show databases;").Rows.Select(row => row.Items).ToList();
+				return databases.Where(dbName => !wontAddDatabases.Contains(dbName.First())).Select(dbName => new Database(dbName.First().ToString())).ToList();
+			}
+			throw new NotImplementedException("Database type is not inplemented");
 		}
 	}
 }

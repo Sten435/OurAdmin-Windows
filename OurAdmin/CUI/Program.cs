@@ -13,14 +13,15 @@ namespace CUI
 	{
 		private static IServerInfo ServerRepo;
 		private static DatabaseController databaseController;
-
+		private static DatabaseType databaseType;
 		private static void Main()
 		{
+			databaseType = DatabaseType.MYSQL;
 			while (true)
 			{
 				Utility.ResetIndex();
-				ServerRepo = new ServerRepo(DatabaseType.MYSQL);
-				databaseController = new(ServerRepo);
+				ServerRepo = new ServerRepo(databaseType);
+				databaseController = new(ServerRepo, databaseType);
 				DomeinController.DatabaseController = databaseController;
 
 				string hostNaam;

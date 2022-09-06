@@ -6,9 +6,11 @@
     Title="TablesView">
 
     <Grid>
-        <DockPanel>
-            <Controls:SideBar DockPanel.Dock="Left" />
-            <Controls:HeaderNavigation DockPanel.Dock="Top" />
-        </DockPanel>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <DockPanel>
+                <Controls:SideBar DockPanel.Dock="Left" />
+                <Controls:HeaderNavigation DockPanel.Dock="Top" />
+            </DockPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

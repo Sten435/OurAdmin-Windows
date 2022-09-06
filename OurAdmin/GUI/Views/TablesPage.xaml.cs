@@ -16,10 +16,10 @@ namespace GUI.Views
 		{
 			InitializeComponent();
 			this.DataContext = ViewModelBase.Instance;
-			newTable_TextChanged(null, null);
+			NewTableTextChanged(null, null);
 		}
 
-		private void newTable_TextChanged(object sender, TextChangedEventArgs e)
+		private void NewTableTextChanged(object sender, TextChangedEventArgs e)
 		{
 			if (string.IsNullOrEmpty(newTable.Text))
 			{

@@ -90,14 +90,15 @@
         </ListBox>-->
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <Button
-                    Width="100"
+                    Width="auto"
                     Height="45"
                     Margin="0,45,0,0"
+                    Padding="24,0"
                     Command="{Binding DropTable}"
                     FontSize="20"
                     IsHitTestVisible="{Binding IsTableSelected}">
                     <TextBlock TextDecorations="Underline">
-                        Drop
+                        Remove Table
                     </TextBlock>
                 </Button>
             </StackPanel>
@@ -106,29 +107,30 @@
                     <ColumnDefinition Width=".2*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Content="Create Table" />
                 <TextBox
                     Name="newTable"
                     Grid.Column="0"
                     Margin="5,0,0,0"
                     VerticalAlignment="Bottom"
-                    materialDesign:HintAssist.Hint="Carbrands"
+                    materialDesign:HintAssist.Hint="carbrands"
+                    FontSize="22"
                     Foreground="{StaticResource DEFAULT_WHITE}"
                     MaxLength="64"
                     MaxLines="1"
                     Text="{Binding NewTableToAdd}"
-                    TextChanged="newTable_TextChanged" />
+                    TextChanged="NewTableTextChanged" />
                 <Button
                     Name="goBtn"
                     Grid.Column="1"
-                    Width="85"
+                    Width="auto"
                     Height="45"
                     Margin="45,25,0,0"
+                    Padding="24,0"
                     HorizontalAlignment="Right"
                     Command="{Binding AddTable}"
                     FontSize="20">
                     <TextBlock TextDecorations="Underline">
-                        Go
+                        Create Table
                     </TextBlock>
                 </Button>
             </Grid>

@@ -2,12 +2,16 @@
     x:Class="GUI.Views.SqlQueryPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GUI.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:GUI.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:ViewModelBase}"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    Loaded="Window_Loaded"
     mc:Ignorable="d">
     <Grid Margin="0,50,0,0">
         <Grid.ColumnDefinitions>
@@ -15,33 +19,46 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width=".02*" />
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="1">
-            <RichTextBox
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height=".5*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <avalonEdit:TextEditor
+                xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                Name="textEditor"
+                Grid.Column="0"
                 Height="400"
                 materialDesign:HintAssist.Hint=" SELECT * FROM TABLE;"
+                Background="{StaticResource DEFAULT_DARKER_DARK}"
                 BorderBrush="Transparent"
-                CaretBrush="{StaticResource DEFAULT_WHITE}"
                 FontSize="22"
-                IsDocumentEnabled="True"
-                IsInactiveSelectionHighlightEnabled="True"
-                IsReadOnlyCaretVisible="True"
-                VerticalScrollBarVisibility="Visible">
-                <FlowDocument>
-                    <FlowDocument.Resources>
-                        <Style TargetType="Paragraph">
-                            <Setter Property="Margin" Value="10" />
-                        </Style>
-                    </FlowDocument.Resources>
-                </FlowDocument>
-            </RichTextBox>
+                Foreground="white"
+                HorizontalScrollBarVisibility="Hidden"
+                ShowLineNumbers="True"
+                SyntaxHighlighting="SQL"
+                TextChanged="SqlQueryChanged"
+                VerticalScrollBarVisibility="Auto" />
             <Button
+                Grid.Column="1"
                 Width="100"
                 Height="45"
-                Margin="45,45,0,0"
+                Margin="45,45,0,50"
                 HorizontalAlignment="Right"
+                Click="ExecuteSqlQuery"
                 FontSize="20">
                 <TextBlock Text="RUN" TextDecorations="Underline" />
             </Button>
+            <ScrollViewer
+                Grid.Row="1"
+                Grid.Column="1"
+                MaxHeight="320">
+                <ListView x:Name="list">
+                    <ListView.View>
+                        <GridView x:Name="gridView" />
+                    </ListView.View>
+                </ListView>
+            </ScrollViewer>
         </StackPanel>
     </Grid>
 </UserControl>

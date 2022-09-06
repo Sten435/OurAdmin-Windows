@@ -18,13 +18,13 @@ namespace GUI
 		}
 		private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
 		{
-			if (defaultDataContent == null)
-				defaultDataContent = this.Content;
+			//if (defaultDataContent == null)
+			//	defaultDataContent = this.Content;
 
-			if (this.WindowState != WindowState.Maximized)
-				this.Content = "Full screen only.";
-			else if (this.Content != defaultDataContent)
-				this.Content = defaultDataContent;
+			//if (this.WindowState != WindowState.Maximized)
+			//	this.Content = "Full screen only.";
+			//else if (this.Content != defaultDataContent)
+			//	this.Content = defaultDataContent;
 		}
 
 		void myClass_SourceInitialized(object sender, EventArgs e)

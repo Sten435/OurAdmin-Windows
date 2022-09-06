@@ -18,19 +18,22 @@ namespace Domein.Controllers
 	{
 		private readonly IServerInfo _databasesRepo;
 		private Server _connectedServer = null;
-		public DatabaseController(IServerInfo databasesRepo)
+		public DatabaseController(IServerInfo databasesRepo, DatabaseType databaseType)
 		{
 			_databasesRepo = databasesRepo;
+			DatabaseType = databaseType;
 		}
 
 		/// <summary>
 		/// See if there is any server connected.
 		/// </summary>
-		public bool IsServerConnected;
+		public bool IsServerConnected { get; set; }
 		/// <summary>
 		/// See if there is any database connected.
 		/// </summary>
 		public bool IsDatabaseConnected => _connectedServer != null && _connectedDatabase != null;
+
+		public static DatabaseType DatabaseType { get; set; }
 
 		public List<string> GetServerTypes()
 		{
@@ -73,6 +76,28 @@ namespace Domein.Controllers
 			}
 		}
 
+		public void AddDatabaseToExternalServer(string databaseName)
+		{
+			if (DatabaseType == DatabaseType.MYSQL)
+			{
+				SqlQuery($"CREATE DATABASE {databaseName.Trim().Replace(' ', '_')}");
+			} else
+			{
+
+			}
+		}
+
+		public void RemoveDatabaseFromExternalServer(Database selectedDatabase)
+		{
+			if (DatabaseType == DatabaseType.MYSQL)
+			{
+				SqlQuery($"DROP DATABASE {selectedDatabase.Name}");
+			} else
+			{
+
+			}
+		}
+
 		public void RemoveTableFromDatabase(string cleanedTable)
 		{
 			try
@@ -85,21 +110,30 @@ namespace Domein.Controllers
 			}
 		}
 
-		public void AddColumnToTable(Column newColumn, string selectedTable)
+		public void WriteChangeColumnToTable(Column column, string oldName, string selectedTable)
+		{
+			ExecuteActionToColumn(column, selectedTable, true, oldName);
+		}
+
+		public void ExecuteActionToColumn(Column newColumn, string selectedTable, bool isChange = false, string oldName = "")
 		{
 			try
 			{
 				newColumn.__Type = newColumn.__Type.ToUpper();
 				newColumn.__DefaultValue = newColumn.__DefaultValue.ToString().ToUpper();
 
-				string typeLengthPart = (Validate.NullOrWhiteSpace(newColumn.__LengthValues) == false && (newColumn.__Type == "CHAR" || newColumn.__Type == "BINARY" || newColumn.__Type == "VARCHAR" || newColumn.__Type == "VARBINARY")) ? $"{newColumn.__Type}({newColumn.__LengthValues})" : $"{newColumn.__Type}";
-				string attributesPart = newColumn.__Attributes == "NONE" ? string.Empty : $"{newColumn.__Attributes}";
+				List<string> lengthTypes = new() { "CHAR", "BINARY", "VARCHAR", "VARBINARY", "TINYINT", "INT", "DOUBLE", "DECIMAL", "SMALLINT", "MEDIUMINT", "BIGINT", "VARBINARY", "SET", "ENUM" };
+				string typeLengthPart = (Validate.NullOrWhiteSpace(newColumn.__LengthValues) == false && (lengthTypes.Contains(newColumn.__Type.ToUpper()))) ? $"{newColumn.__Type}({newColumn.__LengthValues})" : $"{newColumn.__Type}";
+				string attributesPart = newColumn.__Attributes ?? string.Empty;
 				string __null = newColumn.IsNull == false ? $"NOT NULL" : $"NULL";
 				string __default = Validate.NullOrWhiteSpace(newColumn.__DefaultValue.ToString()) == true ? string.Empty : $"{(newColumn.__DefaultValue.ToString() == "AS DEFINED" ? $"DEFAULT '{newColumn.__AsDefined}'" : newColumn.__DefaultValue.ToString().ToUpper() == "NONE" ? string.Empty : $"DEFAULT {newColumn.__DefaultValue}")}";
-				string autoIncrement = newColumn.__AutoIncrement == false ? string.Empty : $"AUTO_INCREMENT";
+				string autoIncrement = !newColumn.__AutoIncrement ? string.Empty : $"AUTO_INCREMENT";
 				string comment = Validate.NullOrWhiteSpace(newColumn.__Comments) == true ? string.Empty : $"COMMENT '{newColumn.__Comments}'";
-				string primaryKey = newColumn.__AutoIncrement == false ? string.Empty : $",ADD PRIMARY KEY (`{newColumn.Name.Trim()}`)";
-				string query = $"ALTER TABLE `{selectedTable.Trim()}` ADD `{newColumn.Name.Trim()}` {typeLengthPart} {attributesPart} {__null} {__default} {autoIncrement} {comment} {primaryKey}";
+				string primaryKey = string.Empty;
+				if (!isChange)
+					primaryKey = !newColumn.__AutoIncrement ? string.Empty : $",ADD PRIMARY KEY (`{newColumn.Name.Trim()}`)";
+				string addChange = !isChange ? "ADD" : $"CHANGE `{oldName}`";
+				string query = $"ALTER TABLE `{selectedTable.Trim()}` {addChange} `{newColumn.Name.Trim()}` {typeLengthPart} {attributesPart} {__null} {__default} {autoIncrement} {comment} {primaryKey}";
 
 				SqlQuery(query.Trim());
 			} catch (Exception err)
@@ -146,12 +180,12 @@ namespace Domein.Controllers
 
 		public List<string> GetServerAttributes()
 		{
-			return new() { "NONE", "BINARY", "UNSIGNED", "UNSIGNED ZEROFILL", "on update CURRENT_TIMESTAMP" };
+			return new() { "NONE", "on update CURRENT_TIMESTAMP" };
 		}
 
 		public List<string> GetServerDefaults()
 		{
-			return new() { "NONE", "AS DEFINED", "NULL", "CURRENT_TIMESTAMP" };
+			return new() { "NONE", "AS DEFINED", "NULL", "CURRENT_TIMESTAMP()" };
 		}
 
 
@@ -183,7 +217,7 @@ namespace Domein.Controllers
 
 				foreach (DataRow row in dataTable.Rows)
 				{
-					List<object> rowData = new();
+					List<string> rowData = new();
 
 					foreach (DataColumn col in dataTable.Columns)
 					{
@@ -199,7 +233,7 @@ namespace Domein.Controllers
 						column.__Type = col.DataType.Name;
 						column.SqlType = GetColumnType(query, column.Name);
 
-						rowData.Add(row[col]);
+						rowData.Add(row[col].ToString());
 						table.AddColumn(column);
 					}
 
@@ -232,12 +266,14 @@ namespace Domein.Controllers
 					Column column = new();
 
 					column.Name = resultItem.COLUMNNAME;
-					column.IsNull = resultItem.ISNULLABLE.ToUpper() == "YES" ? true : false;
-					column.Extra = resultItem.EXTRA.ToUpper().Contains("ON UPDATE CURRENT_TIMESTAMP") == false ? "" : "on update CURRENT_TIMESTAMP";
-					column.__DefaultValue = resultItem.COLUMNDEFAULT;
+					column.IsNull = resultItem.ISNULLABLE.ToUpper() == "YES";
+					column.Extra = resultItem.EXTRA.ToUpper().Contains("ON UPDATE CURRENT_TIMESTAMP") == false ? (resultItem.COLUMNDEFAULT?.ToString() ?? string.Empty) : "on update CURRENT_TIMESTAMP";
+					List<string> defaultValues = new() { "NULL", "CURRENT_TIMESTAMP()" };
+					column.__DefaultValue = resultItem.COLUMNDEFAULT?.ToString().Trim() == "''" ? "AS DEFINED" : (defaultValues.Contains(resultItem.COLUMNDEFAULT?.ToString().ToUpper()) ? resultItem.COLUMNDEFAULT?.ToString().ToUpper() : (resultItem.COLUMNDEFAULT?.ToString().Length > 2 ? "AS DEFINED" : string.Empty));
 					column.__AutoIncrement = resultItem.EXTRA == "auto_increment";
 					column.__Comments = resultItem.COLUMNCOMMENT;
-					column.__Attributes = column.Extra;
+					column.__AsDefined = resultItem.COLUMNDEFAULT?.ToString().Trim() == "''" ? string.Empty : resultItem.COLUMNDEFAULT;
+					column.__Attributes = resultItem.EXTRA.ToUpper();
 					column.__Type = resultItem.COLUMNTYPE;
 					column.SqlType = resultItem.DATATYPE;
 					table.AddColumn(column);
@@ -386,9 +422,8 @@ namespace Domein.Controllers
 		{
 			if (_connectedServer == null || !IsServerConnected)
 				throw new DatabaseException("No server connected, please connect to a server");
-			if (_connectedServer.Databases.Contains(database))
-				throw new DatabaseException("Database already exists in the server");
-			_databasesRepo.AddDatabase(_connectedServer, database);
+			if (!_connectedServer.Databases.Contains(database))
+				_databasesRepo.AddDatabase(_connectedServer, database);
 		}
 
 		/// <summary>

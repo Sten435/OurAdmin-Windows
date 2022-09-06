@@ -20,7 +20,6 @@ namespace Domein.DataBase.DataTable
 		public string __Comments { get; set; } = string.Empty;
 		public bool __AutoIncrement { get; set; } = false;
 
-
 		public override bool Equals(object obj)
 		{
 			return obj is Column column &&
@@ -29,13 +28,31 @@ namespace Domein.DataBase.DataTable
 				   TypeAmount == column.TypeAmount &&
 				   __Type == column.__Type &&
 				   SqlType == column.SqlType &&
+				   Extra == column.Extra &&
+				   __LengthValues == column.__LengthValues &&
 				   EqualityComparer<object>.Default.Equals(__DefaultValue, column.__DefaultValue) &&
-				   Extra == column.Extra;
+				   EqualityComparer<object>.Default.Equals(__AsDefined, column.__AsDefined) &&
+				   __Attributes == column.__Attributes &&
+				   __Comments == column.__Comments &&
+				   __AutoIncrement == column.__AutoIncrement;
 		}
 
 		public override int GetHashCode()
 		{
-			return HashCode.Combine(Name, IsNull, TypeAmount, __Type, SqlType, __DefaultValue, Extra);
+			HashCode hash = new HashCode();
+			hash.Add(Name);
+			hash.Add(IsNull);
+			hash.Add(TypeAmount);
+			hash.Add(__Type);
+			hash.Add(SqlType);
+			hash.Add(Extra);
+			hash.Add(__LengthValues);
+			hash.Add(__DefaultValue);
+			hash.Add(__AsDefined);
+			hash.Add(__Attributes);
+			hash.Add(__Comments);
+			hash.Add(__AutoIncrement);
+			return hash.ToHashCode();
 		}
 	}
 }

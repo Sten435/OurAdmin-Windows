@@ -51,7 +51,7 @@ namespace GUI.Views
 			}
 		}
 
-		private void Button_Click(object sender, RoutedEventArgs e)
+		private void AddServer(object sender, RoutedEventArgs e)
 		{
 			if (!string.IsNullOrWhiteSpace(Server.Text) &&
 				!string.IsNullOrWhiteSpace(User.Text) &&

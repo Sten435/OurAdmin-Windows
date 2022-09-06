@@ -99,7 +99,7 @@
                 Height="45"
                 Margin="10"
                 HorizontalAlignment="Right"
-                Click="Button_Click"
+                Click="AddServer"
                 FontSize="20">
 
                 <TextBlock

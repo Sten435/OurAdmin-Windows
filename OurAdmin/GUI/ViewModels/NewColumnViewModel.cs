@@ -191,19 +191,11 @@ namespace GUI.ViewModels
 
 		#region Commands
 
-		public ICommand AddColumnToTable {
-			get {
-				return new RelayCommand((_none_) =>
-				{
-					ColumnToTable(_none_);
-					ViewModelBase.OnPropertyChanged(nameof(ViewModelBase.Tables));
-				});
-			}
-		}
+		public RelayCommand<object> AddColumnToTable => new(ColumnToTable);
 
 		#endregion
 
-		private void ColumnToTable(object obj)
+		private void ColumnToTable(object window)
 		{
 			Column newColumn = FillColumnWithFields();
 			if (Validate.NullOrWhiteSpace(newColumn.Name))
@@ -218,26 +210,31 @@ namespace GUI.ViewModels
 				return;
 			}
 
-			DomeinController.AddColumnToTable(newColumn, DomeinController.SelectedTable);
+			if (!OnlyChangeColumn)
+				DomeinController.AddColumnToTable(newColumn, DomeinController.SelectedTable);
+			else
+				DomeinController.WriteChangeColumnToTable(newColumn, ViewModelBase.SelectedColumn.Name, DomeinController.SelectedTable);
 
 			ViewModelBase.OnPropertyChanged(nameof(ViewModelBase.ColumnStructure));
+			ViewModelBase.OnPropertyChanged(nameof(ViewModelBase.Tables));
+			(window as Window).Close();
 		}
 
 		private Column FillColumnWithFields()
 		{
 			Column newColumn = new();
-			newColumn.Name = Name != null ? Name : string.Empty;
-			newColumn.__Type = Type != null ? Type : string.Empty;
-			newColumn.__LengthValues = LengthValues != null ? LengthValues : string.Empty;
-			newColumn.__DefaultValue = Default != null ? Default : string.Empty;
+			newColumn.Name = Name ?? string.Empty;
+			newColumn.__Type = Type ?? string.Empty;
+			newColumn.__LengthValues = LengthValues ?? string.Empty;
+			newColumn.__DefaultValue = Default ?? string.Empty;
 			if (newColumn.__DefaultValue.ToString().ToUpper() == "AS DEFINED")
 			{
 				newColumn.__AsDefined = AsDefined;
 			} else
 				newColumn.__AsDefined = string.Empty;
 
-			newColumn.__Attributes = Attribute != null ? Attribute : string.Empty;
-			newColumn.__Comments = Comments != null ? Comments : string.Empty;
+			newColumn.__Attributes = Attribute ?? string.Empty;
+			newColumn.__Comments = Comments ?? string.Empty;
 			newColumn.IsNull = IsNull;
 			newColumn.__AutoIncrement = AutoIncrement;
 

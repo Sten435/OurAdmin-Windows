@@ -11,79 +11,133 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:ViewModelBase}"
     mc:Ignorable="d">
     <Grid Background="{StaticResource DEFAULT_LIGHT_DARK}">
-        <StackPanel>
-            <StackPanel Margin="25,35">
-                <Label
-                    Margin="0,0,0,20"
-                    Content="OurAdmin"
-                    FontWeight="ExtraBold"
-                    Style="{StaticResource labelStyle}" />
-                <Border
-                    Background="{StaticResource DEFAULT_DARKER_DARK}"
-                    BorderBrush="{StaticResource DEFAULT_LIGHT_DARK}"
-                    BorderThickness="2"
-                    CornerRadius="10">
-                    <ComboBox
-                        Height="50"
-                        Padding="10,10,20,0"
-                        materialDesign:ListBoxItemAssist.ShowSelection="False"
-                        materialDesign:RippleAssist.IsDisabled="True"
-                        BorderBrush="{StaticResource DEFAULT_WHITE}"
-                        BorderThickness="0"
-                        ItemsSource="{Binding ServerList, Mode=OneWay}"
-                        SelectedItem="{Binding SelectedServer}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Label Content="{Binding Host}">
-                                        <Label.Style>
-                                            <Style TargetType="Label">
-                                                <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
-                                                <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
-                                            </Style>
-                                        </Label.Style>
-                                    </Label>
-                                </Grid>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </Border>
-                <TextBlock
-                    Margin="0,12"
-                    FontWeight="Normal"
-                    MouseLeftButtonUp="TextBlock_MouseLeftButtonUp"
-                    Style="{StaticResource newServerStyle}"
-                    Text="Add Server"
-                    TextDecorations="Underline" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="240" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="190" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Margin="25,35">
+            <Label
+                Margin="0,0,0,20"
+                Content="OurAdmin"
+                FontWeight="ExtraBold"
+                Style="{StaticResource labelStyle}" />
+            <Border
+                Background="{StaticResource DEFAULT_DARKER_DARK}"
+                BorderBrush="{StaticResource DEFAULT_LIGHT_DARK}"
+                BorderThickness="2"
+                CornerRadius="10">
+                <ComboBox
+                    Height="50"
+                    Padding="10,10,20,0"
+                    materialDesign:ListBoxItemAssist.ShowSelection="False"
+                    materialDesign:RippleAssist.IsDisabled="True"
+                    BorderBrush="{StaticResource DEFAULT_WHITE}"
+                    BorderThickness="0"
+                    ItemsSource="{Binding ServerList, Mode=OneWay}"
+                    SelectedItem="{Binding SelectedServer}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Label Content="{Binding Host}">
+                                    <Label.Style>
+                                        <Style TargetType="Label">
+                                            <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
+                                            <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+                                        </Style>
+                                    </Label.Style>
+                                </Label>
+                            </Grid>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </Border>
+            <TextBlock
+                Margin="0,12"
+                FontWeight="Normal"
+                MouseLeftButtonUp="AddNewServerPopup"
+                Style="{StaticResource newServerStyle}"
+                Text="Add Server"
+                TextDecorations="Underline" />
+        </StackPanel>
+        <ListBox
+            Grid.Row="1"
+            MaxHeight="570"
+            d:ItemsSource="{d:SampleData ItemCount=5}"
+            materialDesign:ListBoxItemAssist.ShowSelection="False"
+            AlternationCount="2"
+            ItemsSource="{Binding DatabaseList}"
+            SelectedItem="{Binding SelectedDatabase}">
+            <ListBox.ItemContainerStyle>
+                <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListBoxItem">
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Cursor" Value="Hand" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{StaticResource DEFAULT_HIGHLIGHT}" />
+                            <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+                            <Setter Property="IsHitTestVisible" Value="False" />
+                        </Trigger>
+                    </Style.Triggers>
+                    <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Self}, Path=(ItemsControl.AlternationIndex), Converter={StaticResource BackgroundConverter}}" />
+                    <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Style="{StaticResource listBoxItemStyle}" Text="{Binding Name}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Grid.Row="2" Margin="0,25,0,0">
+            <Label
+                Margin="18,0"
+                Content="Add Database"
+                FontSize="14"
+                Foreground="{StaticResource DEFAULT_WHITE}" />
+            <TextBox
+                Name="newDatabase"
+                Margin="20,0"
+                VerticalAlignment="Bottom"
+                materialDesign:HintAssist.Hint="cars"
+                FontSize="22"
+                Foreground="{StaticResource DEFAULT_WHITE}"
+                MaxLength="64"
+                MaxLines="1"
+                MouseLeftButtonDown="NewDatabaseClear"
+                Text="{Binding NewDatabaseToAdd}"
+                TextChanged="NewDatabaseTextChanged" />
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Button
+                    Name="removeDatabaseButton"
+                    Width="85"
+                    Height="45"
+                    Margin="40,30"
+                    HorizontalAlignment="Right"
+                    Click="RemoveDatabaseButton"
+                    Command="{Binding RemoveDatabase}"
+                    FontSize="20"
+                    IsHitTestVisible="{Binding IsDataBaseSelected}"
+                    Style="{StaticResource RemoveButton}">
+                    <TextBlock TextDecorations="Underline">
+                        Delete
+                    </TextBlock>
+                </Button>
+                <Button
+                    Name="newDatabaseButton"
+                    Width="85"
+                    Height="45"
+                    Margin="40,30"
+                    HorizontalAlignment="Right"
+                    Click="NewDatabaseButton"
+                    Command="{Binding AddDatabase}"
+                    FontSize="20">
+                    <TextBlock TextDecorations="Underline">
+                        Add
+                    </TextBlock>
+                </Button>
             </StackPanel>
-            <ListBox
-                materialDesign:ListBoxItemAssist.ShowSelection="False"
-                AlternationCount="2"
-                IsHitTestVisible="{Binding CanSelectDatabase}"
-                ItemsSource="{Binding DatabaseList}"
-                SelectedItem="{Binding SelectedDatabase}">
-                <ListBox.ItemContainerStyle>
-                    <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListBoxItem">
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Cursor" Value="Hand" />
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{StaticResource DEFAULT_HIGHLIGHT}" />
-                                <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
-                                <Setter Property="IsHitTestVisible" Value="False" />
-                            </Trigger>
-                        </Style.Triggers>
-                        <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Self}, Path=(ItemsControl.AlternationIndex), Converter={StaticResource BackgroundConverter}}" />
-                        <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
-                    </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Style="{StaticResource listBoxItemStyle}" Text="{Binding Name}" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
         </StackPanel>
     </Grid>
 </UserControl>

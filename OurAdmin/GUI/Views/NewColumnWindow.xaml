@@ -7,6 +7,7 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="clr-namespace:GUI.ViewModels"
+    x:Name="NewColumn"
     Title="New Column"
     Width="400"
     d:DataContext="{d:DesignInstance Type=viewmodels:NewColumnViewModel}"
@@ -69,6 +70,7 @@
                 materialDesign:HintAssist.Hint="Attributes                                             ˅"
                 ItemsSource="{Binding Attributes}"
                 SelectedValue="{Binding Attribute}"
+                SelectionChanged="ComboBox_SelectionChanged"
                 Style="{StaticResource inputComboBoxStyle}" />
             <ComboBox
                 Grid.Row="5"
@@ -94,6 +96,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <CheckBox
+                Name="isNull"
                 Grid.Column="0"
                 Padding="10,0,0,4"
                 Background="{StaticResource DEFAULT_HIGHLIGHT}"
@@ -120,6 +123,7 @@
                 Margin="10"
                 HorizontalAlignment="Right"
                 Command="{Binding AddColumnToTable}"
+                CommandParameter="{Binding ElementName=NewColumn}"
                 FontSize="20">
                 <TextBlock
                     Margin="10,0,10,4.2"

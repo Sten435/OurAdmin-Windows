@@ -15,11 +15,12 @@ namespace GUI
 	{
 		private static IServerInfo ServerRepo;
 		private static DatabaseController databaseController;
+		private static DatabaseType databaseType = DatabaseType.MYSQL;
 
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
-			ServerRepo = new ServerRepo(DatabaseType.MYSQL);
-			databaseController = new(ServerRepo);
+			ServerRepo = new ServerRepo(databaseType);
+			databaseController = new(ServerRepo, databaseType);
 			DomeinController.DatabaseController = databaseController;
 
 			MainWindow = new NewServerWindow();

@@ -48,7 +48,12 @@ namespace Repository
 		/// </summary>
 		/// <param name="server">The server where the database needs to be removed.</param>
 		/// <param name="database">The database that needs to be removed.</param>
-		public void RemoveDatabase(Server server, Database database) => _serverList.First(svr => svr.Equals(server)).Databases.Remove(database);
+		public void RemoveDatabase(Server server, Database database)
+		{
+			if (_selectedDatabase.Name.ToLower() == database.Name.ToLower())
+				_selectedDatabase = null;
+			_serverList.First(svr => svr.Equals(server)).Databases.Remove(database);
+		}
 
 		/// <summary>
 		/// Remove a server from the serverList.

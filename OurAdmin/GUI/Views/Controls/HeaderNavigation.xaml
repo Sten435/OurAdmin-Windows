@@ -9,42 +9,47 @@
     d:DataContext="{d:DesignInstance Type=viewmodels:ViewModelBase}"
     mc:Ignorable="d">
     <Grid>
-        <StackPanel Orientation="Vertical">
-            <StackPanel
-                Margin="0,25,0,20"
-                HorizontalAlignment="Center"
-                Orientation="Horizontal">
-                <TextBlock Name="selectedServer" Text="{Binding NavigationBreadCrumb.Content}" />
+        <DockPanel LastChildFill="True">
+            <StackPanel HorizontalAlignment="Stretch" DockPanel.Dock="Top">
+                <StackPanel
+                    Margin="0,25,0,20"
+                    HorizontalAlignment="Center"
+                    DockPanel.Dock="Top"
+                    Orientation="Horizontal">
+                    <TextBlock Name="selectedServer" Text="{Binding NavigationBreadCrumb.Content}" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Button
+                        Command="{Binding SelectTablesPage}"
+                        Content="Tables"
+                        IsHitTestVisible="{Binding IsDataBaseSelected}"
+                        IsHitTestVisibleChanged="CanUserNavigateThisTab"
+                        Style="{StaticResource ButtonNavigationStyle}" />
+                    <Button
+                        Command="{Binding SelectStructuurPage}"
+                        Content="Structuur"
+                        IsHitTestVisible="{Binding IsTableSelected}"
+                        IsHitTestVisibleChanged="CanUserNavigateThisTab"
+                        Style="{StaticResource ButtonNavigationStyle}" />
+                    <Button
+                        Command="{Binding SelectSqlQueryPage}"
+                        Content="SQL Query"
+                        IsHitTestVisible="{Binding IsDataBaseSelected}"
+                        IsHitTestVisibleChanged="CanUserNavigateThisTab"
+                        Style="{StaticResource ButtonNavigationStyle}" />
+                </StackPanel>
             </StackPanel>
-            <TabControl
-                IsHitTestVisible="{Binding IsServerSelected}"
-                SelectedIndex="{Binding SelectedTabItemIndex}"
-                Style="{StaticResource navigationTabControlStyle}">
-                <TabItem Style="{StaticResource tabItemNavigationStyle}">
-                    <TabItem.Header>
-                        <Border Style="{StaticResource borderNavigationStyle}">
-                            <Label Content="Tables" Style="{StaticResource labelNavigationStyle}" />
-                        </Border>
-                    </TabItem.Header>
+            <StackPanel>
+                <StackPanel Visibility="{Binding TablesPageVisibility}">
                     <views:TablesPage />
-                </TabItem>
-                <TabItem IsHitTestVisible="{Binding IsTableSelected}" Style="{StaticResource tabItemNavigationStyle}">
-                    <TabItem.Header>
-                        <Border Style="{StaticResource borderNavigationStyle}">
-                            <Label Content="Structuur" Style="{StaticResource labelNavigationStyle}" />
-                        </Border>
-                    </TabItem.Header>
+                </StackPanel>
+                <StackPanel Visibility="{Binding StructurePageVisibility}">
                     <views:StructurePage />
-                </TabItem>
-                <TabItem IsHitTestVisible="{Binding IsDataBaseSelected}" Style="{StaticResource tabItemNavigationStyle}">
-                    <TabItem.Header>
-                        <Border Style="{StaticResource borderNavigationStyle}">
-                            <Label Content="SQL Query" Style="{StaticResource labelNavigationStyle}" />
-                        </Border>
-                    </TabItem.Header>
+                </StackPanel>
+                <StackPanel Visibility="{Binding SqlQueryPageVisibility}">
                     <views:SqlQueryPage />
-                </TabItem>
-            </TabControl>
-        </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </DockPanel>
     </Grid>
 </UserControl>

@@ -1,4 +1,5 @@
-﻿<UserControl
+﻿
+<UserControl
     x:Class="GUI.Views.StructurePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -63,30 +64,26 @@
                 AlternationCount="2"
                 AutoGenerateColumns="False"
                 Background="{StaticResource DEFAULT_DARKER_DARK}"
-                CanUserAddRows="False"
-                CanUserDeleteRows="False"
-                CanUserReorderColumns="True"
-                CanUserResizeColumns="False"
-                CanUserResizeRows="False"
                 ColumnWidth="*"
                 ItemsSource="{Binding ColumnStructure}"
-                OverridesDefaultStyle="True"
                 RowBackground="{StaticResource DEFAULT_LIGHT_DARK}"
                 SelectedValue="{Binding SelectedColumn}"
-                SelectionMode="Single"
-                VerticalScrollBarVisibility="Auto">
+                SelectionMode="Single">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn CanUserResize="False" CanUserSort="True">
+                    <DataGridTemplateColumn>
                         <DataGridTemplateColumn.Header>
                             <TextBlock FontSize="20" Text="Name" />
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Padding="18,10" Text="{Binding Name}" />
+                                <TextBlock
+                                    Padding="18,10"
+                                    Text="{Binding Name}"
+                                    TextTrimming="CharacterEllipsis" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn CanUserResize="False" CanUserSort="True">
+                    <DataGridTemplateColumn>
                         <DataGridTemplateColumn.Header>
                             <TextBlock FontSize="20" Text="Type" />
                         </DataGridTemplateColumn.Header>
@@ -96,7 +93,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn CanUserResize="False" CanUserSort="True">
+                    <DataGridTemplateColumn>
                         <DataGridTemplateColumn.Header>
                             <TextBlock FontSize="20" Text="Null" />
                         </DataGridTemplateColumn.Header>
@@ -106,13 +103,16 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn CanUserResize="False" CanUserSort="True">
+                    <DataGridTemplateColumn>
                         <DataGridTemplateColumn.Header>
                             <TextBlock FontSize="20" Text="Extra" />
                         </DataGridTemplateColumn.Header>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Padding="18,10" Text="{Binding Extra}" />
+                                <TextBlock
+                                    Padding="18,10"
+                                    FontSize="20"
+                                    Text="{Binding Extra}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

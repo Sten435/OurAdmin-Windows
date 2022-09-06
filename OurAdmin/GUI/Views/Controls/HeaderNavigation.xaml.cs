@@ -1,5 +1,6 @@
 ﻿using GUI.ViewModels;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GUI.Views.Controls
 {
@@ -12,6 +13,20 @@ namespace GUI.Views.Controls
 		{
 			InitializeComponent();
 			this.DataContext = ViewModelBase.Instance;
+		}
+
+		private void CanUserNavigateThisTab(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
+		{
+			Button button = sender as Button;
+			if (button != null && !button.IsHitTestVisible)
+			{
+				button.Opacity = .4;
+				button.Cursor = Cursors.No;
+			} else
+			{
+				button.Opacity = 1;
+				button.Cursor = Cursors.Hand;
+			}
 		}
 	}
 }

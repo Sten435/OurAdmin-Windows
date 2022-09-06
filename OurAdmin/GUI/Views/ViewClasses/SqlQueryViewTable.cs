@@ -7,20 +7,14 @@ using System.Threading.Tasks;
 
 namespace GUI.Views.ViewClasses
 {
-	public class StructureTableViewClass
+	public class SqlQueryViewTable
 	{
-		public string Name { get; }
-		public string Type { get; }
-		public bool? Null { get; }
-		public string Extra { get; }
+		public readonly string Name;
 		public readonly Column Column;
 
-		public StructureTableViewClass(string name, string type, bool? nul, string extra, Column column)
+		public SqlQueryViewTable(string name, Column column)
 		{
 			Name = name;
-			Type = type;
-			Null = nul;
-			Extra = extra;
 			Column = column;
 		}
 
@@ -33,15 +27,12 @@ namespace GUI.Views.ViewClasses
 		{
 			return obj is StructureTableViewClass @class &&
 				   Name == @class.Name &&
-				   Type == @class.Type &&
-				   Null == @class.Null &&
-				   Extra == @class.Extra &&
 				   EqualityComparer<Column>.Default.Equals(Column, @class.Column);
 		}
 
 		public override int GetHashCode()
 		{
-			return HashCode.Combine(Name, Type, Null, Extra, Column);
+			return HashCode.Combine(Name, Column);
 		}
 	}
 }

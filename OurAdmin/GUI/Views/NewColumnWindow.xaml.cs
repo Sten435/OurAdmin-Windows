@@ -40,7 +40,10 @@ namespace GUI.Views
 			if (SelectedColumn != null)
 				FillDataFields();
 			else
+			{
+				GetWindow(this).Title = "New Column";
 				ResetAllFields();
+			}
 		}
 
 		private void ResetAllFields()
@@ -76,24 +79,37 @@ namespace GUI.Views
 
 		private void Default_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if ((sender as ComboBox).SelectedValue.ToString().ToUpper() == "AS DEFINED")
+			ComboBox comboBox = (sender as ComboBox);
+			if (comboBox.SelectedValue?.ToString().ToUpper() == "AS DEFINED")
 			{
+				DefaultData.Text = string.Empty;
 				DefaultData.Visibility = Visibility.Visible;
 				return;
+			}else if(comboBox.SelectedValue?.ToString().ToUpper() == "NULL")
+			{
+				isNull.IsChecked = true;
 			}
-			DefaultData.Visibility = Visibility.Collapsed;
 
+			DefaultData.Visibility = Visibility.Collapsed;
+			ComboBox_SelectionChanged(sender, e);
 		}
 
 		private void FillDataFields()
 		{
 			NewColumnViewModel.OnlyChangeColumn = true;
+			GetWindow(this).Title = $"Change { SelectedColumn.Name}";
 
-			NewColumnViewModel.Name = SelectedColumn.Name!;
-			NewColumnViewModel.Type = SelectedColumn.Column.SqlType.ToUpper()!;
-			NewColumnViewModel.AsDefined = SelectedColumn.Column.__AsDefined!.ToString();
-			NewColumnViewModel.Default = SelectedColumn.Column.__DefaultValue?.ToString();
-			NewColumnViewModel.Attribute = SelectedColumn.Column.__Attributes;
+			NewColumnViewModel.Name = SelectedColumn.Name ?? string.Empty;
+			NewColumnViewModel.Type = SelectedColumn.Column.SqlType?.ToUpper() ?? string.Empty;
+			string asDefined = SelectedColumn.Column.__AsDefined?.ToString();
+			if (asDefined != null && asDefined.IndexOf("'") == 0 && asDefined.LastIndexOf("'") == asDefined.Length - 1 && asDefined.Length > 2)
+			{
+				asDefined = asDefined.Remove(asDefined.IndexOf("'"), 1);
+				asDefined = asDefined.Remove(asDefined.LastIndexOf("'"), 1);
+			}
+			NewColumnViewModel.AsDefined = asDefined ?? string.Empty;
+			NewColumnViewModel.Default = SelectedColumn.Column.__DefaultValue?.ToString().ToUpper()	 ?? string.Empty;
+			NewColumnViewModel.Attribute = SelectedColumn.Column.__Attributes ?? string.Empty;
 			NewColumnViewModel.AutoIncrement = SelectedColumn.Column.__AutoIncrement;
 			NewColumnViewModel.Comments = SelectedColumn.Column.__Comments;
 			NewColumnViewModel.IsNull = bool.Parse(SelectedColumn.Column.IsNull?.ToString());
@@ -124,6 +140,13 @@ namespace GUI.Views
 			AddColumnButton.Opacity = 0.4;
 			AddColumnButton.IsEnabled = false;
 			AddColumnButton.Cursor = Cursors.Hand;
+		}
+
+		private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			ComboBox comboBox = sender as ComboBox;
+			if (comboBox.SelectedValue?.ToString() == "NONE")
+				comboBox.SelectedValue = string.Empty;
 		}
 	}
 }

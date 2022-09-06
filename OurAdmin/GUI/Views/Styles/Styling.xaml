@@ -11,6 +11,7 @@
     <SolidColorBrush x:Key="DEFAULT_BLUE" Color="#3B6584" />
     <SolidColorBrush x:Key="DEFAULT_DARKER_DARK" Color="#32322C" />
     <SolidColorBrush x:Key="DEFAULT_HIGHLIGHT" Color="#3B6440" />
+    <SolidColorBrush x:Key="DEFAULT_RED" Color="IndianRed" />
     <SolidColorBrush x:Key="DEFAULT_LIGHT_DARK" Color="#45453F" />
 
     <Style x:Key="labelStyle" TargetType="Label">
@@ -30,30 +31,30 @@
         <Setter Property="Padding" Value="12,6,0,6" />
         <Setter Property="FontWeight" Value="Medium" />
     </Style>
-    <Style x:Key="labelNavigationStyle" TargetType="Label">
+    <Style x:Key="ButtonNavigationStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="FontSize" Value="20" />
-        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Opacity" Value=".4" />
         <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Margin" Value="60,0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Background="{TemplateBinding Background}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding IsHitTestVisible, RelativeSource={RelativeSource Self}}" Value="false">
-                <Setter Property="Opacity" Value="0.4" />
-            </DataTrigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
+            </Trigger>
         </Style.Triggers>
     </Style>
-    <Style x:Key="borderNavigationStyle" TargetType="Border">
-        <Setter Property="BorderThickness" Value="0,0,0,4" />
-        <Setter Property="BorderBrush" Value="{StaticResource DEFAULT_HIGHLIGHT}" />
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="False">
-                <Setter Property="BorderBrush" Value="Transparent" />
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
-    <Style
-        x:Key="tabItemNavigationStyle"
-        BasedOn="{StaticResource MaterialDesignNavigationRailTabItem}"
-        TargetType="TabItem">
+    <Style x:Key="tabNavigationStyle" TargetType="StackPanel">
         <Setter Property="materialDesign:RippleAssist.IsDisabled" Value="True" />
         <Setter Property="MaxWidth" Value="240" />
         <Setter Property="MinWidth" Value="200" />
@@ -193,6 +194,38 @@
             </Trigger>
             <DataTrigger Binding="{Binding IsHitTestVisible, RelativeSource={RelativeSource Self}}" Value="false">
                 <Setter Property="Opacity" Value="0.4" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="RemoveButton" TargetType="Button">
+        <Setter Property="Foreground" Value="{StaticResource DEFAULT_WHITE}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{StaticResource DEFAULT_RED}" CornerRadius="{TemplateBinding Border.CornerRadius}">
+                        <ContentPresenter
+                            x:Name="contentPresenter"
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Border.CornerRadius" Value="4" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter Property="Cursor" Value="Hand" />
+            </Trigger>
+            <DataTrigger Binding="{Binding IsHitTestVisible, RelativeSource={RelativeSource Self}}" Value="false">
+                <Setter Property="Opacity" Value="0.4" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsHitTestVisible, RelativeSource={RelativeSource Self}}" Value="true">
+                <Setter Property="Opacity" Value="1" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
