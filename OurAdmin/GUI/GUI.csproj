@@ -13,11 +13,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <COMReference Include="{d37e2a3e-8545-3a39-9f4f-31827c9124ab}">
+	    <WrapperTool>tlbimp</WrapperTool>
+	    <VersionMinor>4</VersionMinor>
+	    <VersionMajor>2</VersionMajor>
+	    <Guid>d37e2a3e-8545-3a39-9f4f-31827c9124ab</Guid>
+	  </COMReference>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <EmbeddedResource Include="sql.xshd" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="AvalonEdit" Version="6.1.3.50" />
+	  <PackageReference Include="BusyIndicator" Version="2.0.1.3" />
 	  <PackageReference Include="MaterialDesignColors" Version="2.0.6" />
 	  <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
 	</ItemGroup>

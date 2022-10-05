@@ -58,9 +58,15 @@ namespace GUI.Views
 				!string.IsNullOrWhiteSpace(Port.Text))
 			{
 				UserInfo user = new(User.Text, Password.Text);
-				Server server = new(Server.Text, user, Port.Text);
+				Server server = new(Server.Text.Trim(), user, Port.Text);
 
-				DomeinController.AddServer(server);
+				if (DomeinController.CheckConnectionToServer(server))
+					DomeinController.AddServer(server);
+				else
+				{
+					MessageBox.Show($"Check cridentials and try again.\n\nHost: {server.Host}\nUser: {user.User}\nPassword: {user.Password}\nPort: {server.Port}", "Can't connect to host", MessageBoxButton.OK);
+					return;
+				}
 
 				this.Close();
 			} else

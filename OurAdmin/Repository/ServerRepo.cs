@@ -1,10 +1,12 @@
-﻿using Domein.DataBase;
+﻿using Domein.Controllers;
+using Domein.DataBase;
 using Domein.DataBase.Exceptions;
 using MySqlConnector;
 using ReposInterface;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Repository
@@ -17,6 +19,8 @@ namespace Repository
 			get; set;
 		}
 		public DatabaseType DatabaseType { get; set; }
+
+		private MySqlConnection connection { get; set; }
 
 		public ServerRepo(DatabaseType _databaseType)
 		{
@@ -36,6 +40,35 @@ namespace Repository
 		/// </summary>
 		/// <param name="server">The server that needs to be added.</param>
 		public void AddServer(Server server) => _serverList.Add(server);
+
+		public void OpenConnectionToServer(Server server)
+		{
+			if (connection != null && connection?.State != ConnectionState.Open)
+				connection.Close();
+			connection = new MySqlConnection(server.ConnectionString);
+		}
+
+		public bool CheckConnectionToServer(Server server)
+		{
+			try
+			{
+				OpenConnectionToServer(server);
+				connection.Open();
+				connection = null;
+				return true;
+			} catch (Exception)
+			{
+				return false;
+			}
+		}
+
+		public void CloseConnectionToServer()
+		{
+			if (connection != null && connection?.State != ConnectionState.Open)
+				connection.Close();
+			_selectedDatabase = null;
+			connection = null;
+		}
 
 		/// <summary>
 		/// Get all the servers from the serverList.
@@ -73,17 +106,29 @@ namespace Repository
 			{
 				if (DatabaseType == DatabaseType.MYSQL)
 				{
-					using var connection = new MySqlConnection(server.ConnectionString);
-					connection.Open();
-
+					Debug.WriteLine("Start - SqlQuery");
+					Stopwatch stopwatch = new();
+					stopwatch.Start();
+					if (connection?.State != ConnectionState.Open)
+					{
+						OpenConnectionToServer(server);
+						connection.Open();
+					}
+					Debug.WriteLine("Connection opend for: " + server.Host);
 					if (_selectedDatabase != null && connection.Database != _selectedDatabase.Name)
 						connection.ChangeDatabase(_selectedDatabase.Name);
-
+					Debug.WriteLine("Started query: " + stopwatch.Elapsed.TotalSeconds);
 					using var command = new MySqlCommand(query.Replace(";", string.Empty), connection);
+					Debug.WriteLine("Ended query: " + stopwatch.Elapsed.TotalSeconds);
 					using DataTable dataTable = new();
+					Debug.WriteLine("Started query data: " + stopwatch.Elapsed.TotalSeconds);
 					using MySqlDataAdapter MysqlDataAdapter = new(command);
+					Debug.WriteLine("Ended query data: " + stopwatch.Elapsed.TotalSeconds);
 
 					MysqlDataAdapter.Fill(dataTable);
+
+					stopwatch.Stop();
+					Debug.WriteLine(stopwatch.Elapsed.TotalSeconds + " seconds - SqlQuery");
 
 					return dataTable;
 				} else

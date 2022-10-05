@@ -231,7 +231,8 @@ namespace Domein.Controllers
 						column.TypeAmount = col.MaxLength;
 						column.__DefaultValue = col.DefaultValue;
 						column.__Type = col.DataType.Name;
-						column.SqlType = GetColumnType(query, column.Name);
+						//column.SqlType = GetColumnType(query, column.Name);
+						column.SqlType = string.Empty;
 
 						rowData.Add(row[col].ToString());
 						table.AddColumn(column);
@@ -349,7 +350,14 @@ namespace Domein.Controllers
 		/// Add a server to the serverList.
 		/// </summary>
 		/// <param name="server">The server object that you want to add to the serverList.</param>
-		public void AddServer(Server server) => _databasesRepo.AddServer(server);
+		public void AddServer(Server server)
+		{
+			List<string> serverListHosts = _databasesRepo.GetServers().Select(server => server.Host.ToLower()).ToList();
+			if (!serverListHosts.Contains(server.Host.ToLower()))
+				_databasesRepo.AddServer(server);
+			else
+				throw new UserException("Host is already added to the server list");
+		}
 
 		/// <summary>
 		/// Removes a server from the serverList.
@@ -381,8 +389,14 @@ namespace Domein.Controllers
 			List<Server> servers = _databasesRepo.GetServers().ToList();
 			if (!servers.Contains(server))
 				throw new DatabaseException($"The server: {server.Host} does not exist, add it first");
+			_databasesRepo.OpenConnectionToServer(server);
 			_connectedServer = server;
 			IsServerConnected = true;
+		}
+
+		public bool CheckConnectionToServer(Server server)
+		{
+			return _databasesRepo.CheckConnectionToServer(server);
 		}
 
 		/// <summary>
@@ -392,10 +406,12 @@ namespace Domein.Controllers
 		public void CloseConnectionToServer()
 		{
 			if (_connectedServer == null || !IsServerConnected)
-				throw new DatabaseException("There is no database currently connected");
+				return;
+				//throw new DatabaseException("There is no server currently connected")
 			ConnectedDatabase = null;
 			_connectedServer = null;
 			IsServerConnected = false;
+			_databasesRepo.CloseConnectionToServer();
 		}
 
 		/// <summary>

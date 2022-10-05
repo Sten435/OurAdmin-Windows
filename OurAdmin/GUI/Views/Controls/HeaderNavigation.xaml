@@ -16,7 +16,10 @@
                     HorizontalAlignment="Center"
                     DockPanel.Dock="Top"
                     Orientation="Horizontal">
-                    <TextBlock Name="selectedServer" Text="{Binding NavigationBreadCrumb.Content}" />
+                    <TextBlock
+                        Name="selectedServer"
+                        Style="{StaticResource selectedServerStyle}"
+                        Text="{Binding NavigationBreadCrumb.Content}" />
                 </StackPanel>
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                     <Button

@@ -3,6 +3,8 @@ using Domein.DataBase;
 using GUI.Views;
 using ReposInterface;
 using Repository;
+using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -19,6 +21,7 @@ namespace GUI
 
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
+			//BindingExceptionThrower.Attach()
 			ServerRepo = new ServerRepo(databaseType);
 			databaseController = new(ServerRepo, databaseType);
 			DomeinController.DatabaseController = databaseController;

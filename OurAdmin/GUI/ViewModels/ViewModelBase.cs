@@ -105,7 +105,7 @@ namespace GUI.ViewModels
 						DomeinController.CloseConnectionToServer();
 						DomeinController.RemoveServer(DomeinController.GetServers().Find(server => server.Host == SelectedServer.Host));
 						OnPropertyChanged(nameof(ServerList));
-						MessageBox.Show(error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+						MessageBox.Show(error.Message, "Error 1", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 						//MessageBox.Show("There is been an error connection to the server, please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 					}
 					return new();
@@ -118,16 +118,15 @@ namespace GUI.ViewModels
 				{
 					if (SelectedTable != null)
 						return new(DomeinController.GetColumnsFromTable(_selectedTable).Select(column => new StructureTableViewClass(column.Name, column.__Type, column.IsNull, column.Extra, column)).ToList());
-					return new();
 				} catch (Exception err)
 				{
-					MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-					return new();
+					MessageBox.Show(err.Message, "Error 2", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
+				return new();
 			}
 		}
 
-		public BreadCrumb NavigationBreadCrumb => new BreadCrumb(server: _selectedServer, database: _selectedDatabase);
+		public BreadCrumb NavigationBreadCrumb => new BreadCrumb(server: _selectedServer, database: _selectedDatabase, table: _selectedTable);
 
 		private Server _selectedServer;
 		public Server SelectedServer {
@@ -137,13 +136,29 @@ namespace GUI.ViewModels
 			set {
 				if (_selectedServer == value)
 					return;
+
 				_selectedServer = value;
+				ShowLoadingBar = true;
 				IsServerSelected = true;
+
+				Debug.WriteLine("Started OpenConnectionToServer()");
+				Stopwatch stopwatch = new();
+				stopwatch.Start();
+
+				if (DomeinController.IsServerConnected)
+					DomeinController.CloseConnectionToServer();
+
 				DomeinController.OpenConnectionToServer(value);
+
+				Debug.WriteLine(stopwatch.Elapsed.TotalSeconds + " seconds");
+				Debug.WriteLine("Ended OpenConnectionToServer()");
+
 				OnPropertyChanged(nameof(SelectedServer));
 				OnPropertyChanged(nameof(DatabaseList));
 				OnPropertyChanged(nameof(StructuurTypes));
 				OnPropertyChanged(nameof(NavigationBreadCrumb));
+
+				ShowLoadingBar = false;
 			}
 		}
 
@@ -183,6 +198,15 @@ namespace GUI.ViewModels
 					return;
 				_isServerSelected = value;
 				OnPropertyChanged(nameof(IsServerSelected));
+			}
+		}
+
+		public bool ShowLoadingBar {
+			get => DomeinController.ShowLoadingBar;
+			set {
+				if (ShowLoadingBar != value)
+					DomeinController.ShowLoadingBar = value;
+				OnPropertyChanged(nameof(ShowLoadingBar));
 			}
 		}
 
@@ -238,25 +262,26 @@ namespace GUI.ViewModels
 					return;
 
 				//Async timeout that the user won't spam the database List.
-				Task.Run(() =>
-				{
-					_selectedDatabase = value;
-					DomeinController.UseDatabase(value);
+				ShowLoadingBar = true;
+				_selectedDatabase = value;
 
-					TablesPageVisibility = Visibility.Visible;
-					StructurePageVisibility = Visibility.Collapsed;
-					SqlQueryPageVisibility = Visibility.Collapsed;
-					NotifyDatabaseSelectionChanged?.Invoke();
+				DomeinController.UseDatabase(value);
 
-					OnPropertyChanged(nameof(TablesPageVisibility));
-					OnPropertyChanged(nameof(StructurePageVisibility));
-					OnPropertyChanged(nameof(SqlQueryPageVisibility));
+				TablesPageVisibility = Visibility.Visible;
+				StructurePageVisibility = Visibility.Collapsed;
+				SqlQueryPageVisibility = Visibility.Collapsed;
 
-					OnPropertyChanged(nameof(SelectedDatabase));
-					OnPropertyChanged(nameof(NavigationBreadCrumb));
-					OnPropertyChanged(nameof(Tables));
-					OnPropertyChanged(nameof(IsDataBaseSelected));
-				});
+				NotifyDatabaseSelectionChanged?.Invoke();
+
+				OnPropertyChanged(nameof(TablesPageVisibility));
+				OnPropertyChanged(nameof(StructurePageVisibility));
+				OnPropertyChanged(nameof(SqlQueryPageVisibility));
+
+				OnPropertyChanged(nameof(SelectedDatabase));
+				OnPropertyChanged(nameof(Tables));
+				OnPropertyChanged(nameof(IsDataBaseSelected));
+				OnPropertyChanged(nameof(NavigationBreadCrumb));
+				ShowLoadingBar = false;
 			}
 		}
 
@@ -272,6 +297,7 @@ namespace GUI.ViewModels
 				OnPropertyChanged(nameof(SelectedTable));
 				OnPropertyChanged(nameof(ColumnStructure));
 				OnPropertyChanged(nameof(IsTableSelected));
+				OnPropertyChanged(nameof(NavigationBreadCrumb));
 			}
 		}
 
@@ -336,9 +362,9 @@ namespace GUI.ViewModels
 					OnPropertyChanged(nameof(TablesPageVisibility));
 					OnPropertyChanged(nameof(StructurePageVisibility));
 					OnPropertyChanged(nameof(SqlQueryPageVisibility));
-					OnPropertyChanged(nameof(NavigationBreadCrumb));
 					OnPropertyChanged(nameof(DatabaseList));
 					OnPropertyChanged(nameof(IsDataBaseSelected));
+					OnPropertyChanged(nameof(NavigationBreadCrumb));
 				});
 			}
 		}
@@ -412,9 +438,9 @@ namespace GUI.ViewModels
 					Table table = DomeinController.SqlQuery(CustomSqlQueryText.Trim());
 
 					List<string> headerColumns = table.Columns.Select(column => column.Name).ToList();
-					List<string> resultRows = table.Rows.Select(row => row.Items[0]).ToList();
+					List<string> resultRows = table.Rows.First().Items;
 
-						return (headerColumns, resultRows);
+					return (headerColumns, resultRows);
 				}
 				return new();
 			}
@@ -448,7 +474,7 @@ namespace GUI.ViewModels
 					DomeinController.WriteTableToDatabase(table);
 			} catch (Exception err)
 			{
-				MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				MessageBox.Show(err.Message, "Error 3", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 			}
 		}
 
@@ -462,7 +488,7 @@ namespace GUI.ViewModels
 				newColumnWindow.Show();
 			} catch (Exception err)
 			{
-				MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				MessageBox.Show(err.Message, "Error 4", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 			}
 		}
 
@@ -475,7 +501,7 @@ namespace GUI.ViewModels
 					DomeinController.RemoveTableFromDatabase(_selectedTable);
 				} catch (Exception err)
 				{
-					MessageBox.Show(err.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+					MessageBox.Show(err.Message, "Error 5", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 				}
 			}
 		}
@@ -497,7 +523,7 @@ namespace GUI.ViewModels
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 			} catch (Exception error)
 			{
-				MessageBox.Show(error.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+				MessageBox.Show(error.Message, "Error 6", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 			}
 		}
 	}

@@ -22,5 +22,8 @@ namespace ReposInterface
 		public void UseDatabase(Server server, Database database);
 
 		public DataTable SqlQuery(Server server, string query);
+		void OpenConnectionToServer(Server server);
+		void CloseConnectionToServer();
+		bool CheckConnectionToServer(Server server);
 	}
 }

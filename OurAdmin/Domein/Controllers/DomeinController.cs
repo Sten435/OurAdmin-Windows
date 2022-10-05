@@ -81,6 +81,8 @@ namespace Domein.Controllers
 		/// </summary>
 		public static bool IsServerConnected => DatabaseController.IsServerConnected;
 
+		public static bool ShowLoadingBar { get; set; }
+
 		public static void AddColumnToTable(Column newColumn, string selectedTable)
 		{
 			DatabaseController.ExecuteActionToColumn(newColumn, selectedTable);
@@ -175,6 +177,12 @@ namespace Domein.Controllers
 		/// </summary>
 		/// <param name="server">The server where you want to connect to.</param>
 		public static void OpenConnectionToServer(Server server) => Validate.ValidateObject(parameter: server, callBack: DatabaseController.OpenConnectionToServer, errorMessage: "Server can't be empty");
+
+		/// <summary>
+		/// Check the connection of a server.
+		/// </summary>
+		/// <param name="server">The server to check</param>
+		public static bool CheckConnectionToServer(Server server) => DatabaseController.CheckConnectionToServer(server);
 
 		/// <summary>
 		/// Add a server to the serverList.

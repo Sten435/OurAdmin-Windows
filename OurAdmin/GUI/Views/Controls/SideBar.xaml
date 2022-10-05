@@ -34,7 +34,7 @@
                     materialDesign:RippleAssist.IsDisabled="True"
                     BorderBrush="{StaticResource DEFAULT_WHITE}"
                     BorderThickness="0"
-                    ItemsSource="{Binding ServerList, Mode=OneWay}"
+                    ItemsSource="{Binding ServerList}"
                     SelectedItem="{Binding SelectedServer}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
