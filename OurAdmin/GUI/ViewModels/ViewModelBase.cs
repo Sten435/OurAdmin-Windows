@@ -4,11 +4,13 @@ using Domein.DataBase.DataTable;
 using Domein.DataBase.Exceptions;
 using Domein.Validatie;
 using GUI.Views;
+using GUI.Views.SmallWindows;
 using GUI.Views.ViewClasses;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -431,19 +433,18 @@ namespace GUI.ViewModels
 			}
 		}
 
-		public (List<string>, List<string>) ExecuteCustomSqlQuery {
-			get {
-				if (!Validate.NullOrWhiteSpace(CustomSqlQueryText))
-				{
-					Table table = DomeinController.SqlQuery(CustomSqlQueryText.Trim());
+		public (List<string>, List<List<string>>) ExecuteCustomSqlQuery()
+		{
+			if (!Validate.NullOrWhiteSpace(CustomSqlQueryText))
+			{
+				Table table = DomeinController.SqlQuery(CustomSqlQueryText.Trim());
 
-					List<string> headerColumns = table.Columns.Select(column => column.Name).ToList();
-					List<string> resultRows = table.Rows.First().Items;
+				List<string> headerColumns = table.Columns.Select(column => column.Name).ToList();
+				List<List<string>> resultRows = table.Rows.Select(item => item.Items).ToList();
 
-					return (headerColumns, resultRows);
-				}
-				return new();
+				return (headerColumns, resultRows);
 			}
+			return new();
 		}
 
 		public ICommand SelectSqlQueryPage {
@@ -484,8 +485,8 @@ namespace GUI.ViewModels
 			{
 				if (_selectedColumn == null)
 					return;
-				NewColumnWindow newColumnWindow = new(_selectedColumn);
-				newColumnWindow.Show();
+				ColumnWindow ColumnWindow = new(_selectedColumn);
+				ColumnWindow.Show();
 			} catch (Exception err)
 			{
 				MessageBox.Show(err.Message, "Error 4", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -508,8 +509,8 @@ namespace GUI.ViewModels
 
 		private static void OpenNewColumnWindow(object obj)
 		{
-			NewColumnWindow newColumnWindow = new();
-			newColumnWindow.Show();
+			ColumnWindow ColumnWindow = new();
+			ColumnWindow.Show();
 		}
 
 		#endregion

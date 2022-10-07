@@ -26,7 +26,7 @@ namespace GUI
 			databaseController = new(ServerRepo, databaseType);
 			DomeinController.DatabaseController = databaseController;
 
-			MainWindow = new NewServerWindow();
+			MainWindow = new ServerWindow();
 			MainWindow.Show();
 		}
 

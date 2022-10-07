@@ -21,7 +21,7 @@ namespace GUI.Views.Controls
 
 		private void AddNewServerPopup(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			NewServerWindow newServer = new();
+			ServerWindow newServer = new();
 			newServer.Show();
 			window = Window.GetWindow(this);
 			window.Close();

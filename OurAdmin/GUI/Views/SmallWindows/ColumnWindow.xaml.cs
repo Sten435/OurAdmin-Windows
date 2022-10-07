@@ -20,12 +20,12 @@ using System.Windows.Shapes;
 namespace GUI.Views
 {
 	/// <summary>
-	/// Interaction logic for NewServerWindow.xaml
+	/// Interaction logic for ServerWindow.xaml
 	/// </summary>
-	public partial class NewColumnWindow : Window
+	public partial class ColumnWindow : Window
 	{
 		StructureTableViewClass SelectedColumn;
-		public NewColumnWindow()
+		public ColumnWindow()
 		{
 			InitializeComponent();
 			this.DataContext = new NewColumnViewModel();
@@ -34,7 +34,7 @@ namespace GUI.Views
 				ResetAllFields();
 		}
 
-		public NewColumnWindow(StructureTableViewClass selectedColumn) : this()
+		public ColumnWindow(StructureTableViewClass selectedColumn) : this()
 		{
 			SelectedColumn = selectedColumn;
 			if (SelectedColumn != null)
@@ -85,7 +85,7 @@ namespace GUI.Views
 				DefaultData.Text = string.Empty;
 				DefaultData.Visibility = Visibility.Visible;
 				return;
-			}else if(comboBox.SelectedValue?.ToString().ToUpper() == "NULL")
+			} else if (comboBox.SelectedValue?.ToString().ToUpper() == "NULL")
 			{
 				isNull.IsChecked = true;
 			}
@@ -97,7 +97,7 @@ namespace GUI.Views
 		private void FillDataFields()
 		{
 			NewColumnViewModel.OnlyChangeColumn = true;
-			GetWindow(this).Title = $"Change { SelectedColumn.Name}";
+			GetWindow(this).Title = $"Change {SelectedColumn.Name}";
 
 			NewColumnViewModel.Name = SelectedColumn.Name ?? string.Empty;
 			NewColumnViewModel.Type = SelectedColumn.Column.SqlType?.ToUpper() ?? string.Empty;
@@ -108,7 +108,7 @@ namespace GUI.Views
 				asDefined = asDefined.Remove(asDefined.LastIndexOf("'"), 1);
 			}
 			NewColumnViewModel.AsDefined = asDefined ?? string.Empty;
-			NewColumnViewModel.Default = SelectedColumn.Column.__DefaultValue?.ToString().ToUpper()	 ?? string.Empty;
+			NewColumnViewModel.Default = SelectedColumn.Column.__DefaultValue?.ToString().ToUpper() ?? string.Empty;
 			NewColumnViewModel.Attribute = SelectedColumn.Column.__Attributes ?? string.Empty;
 			NewColumnViewModel.AutoIncrement = SelectedColumn.Column.__AutoIncrement;
 			NewColumnViewModel.Comments = SelectedColumn.Column.__Comments;

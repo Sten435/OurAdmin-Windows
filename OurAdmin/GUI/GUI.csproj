@@ -38,7 +38,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Page Update="Views\NewColumnWindow.xaml">
+	  <Page Update="Views\SmallWindows\ColumnWindow.xaml">
 	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 	  </Page>
 	</ItemGroup>

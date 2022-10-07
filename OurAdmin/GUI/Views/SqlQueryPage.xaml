@@ -28,7 +28,7 @@
                 xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
                 Name="textEditor"
                 Grid.Column="0"
-                Height="400"
+                Height="200"
                 materialDesign:HintAssist.Hint=" SELECT * FROM TABLE;"
                 Background="{StaticResource DEFAULT_DARKER_DARK}"
                 BorderBrush="Transparent"
@@ -53,7 +53,30 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 MaxHeight="320">
-                <ListView x:Name="list">
+                <ListView x:Name="list" PreviewMouseLeftButtonDown="ListViewItemClick">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListViewItem}">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                        <Border
+                                            Padding="15"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="Transparent"
+                                            BorderThickness="0">
+                                            <GridViewRowPresenter
+                                                Width="Auto"
+                                                Margin="0"
+                                                HorizontalAlignment="Stretch"
+                                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                Content="{TemplateBinding Content}" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
                     <ListView.View>
                         <GridView x:Name="gridView" />
                     </ListView.View>

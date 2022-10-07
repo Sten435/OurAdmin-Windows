@@ -18,12 +18,12 @@ using System.Windows.Shapes;
 namespace GUI.Views
 {
 	/// <summary>
-	/// Interaction logic for NewServerWindow.xaml
+	/// Interaction logic for ServerWindow.xaml
 	/// </summary>
-	public partial class NewServerWindow : Window
+	public partial class ServerWindow : Window
 	{
 		Window MainWindow = new MainWindow();
-		public NewServerWindow()
+		public ServerWindow()
 		{
 			InitializeComponent();
 		}

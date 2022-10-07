@@ -1,5 +1,6 @@
 ﻿using Domein.DataBase.DataTable;
 using GUI.ViewModels;
+using GUI.Views.SmallWindows;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using System;
 using System.Collections.Generic;
@@ -52,7 +53,7 @@ namespace GUI.Views
 			list.ItemsSource = null;
 			gridView.Columns.Clear();
 
-			(List<string> columns, List<string> rows) = ViewModelBase.Instance.ExecuteCustomSqlQuery;
+			(List<string> columns, List<List<string>> rows) = ViewModelBase.Instance.ExecuteCustomSqlQuery();
 			DataTable dt = new DataTable();
 
 			foreach (string column in columns)
@@ -61,17 +62,32 @@ namespace GUI.Views
 				dt.Columns.Add(new DataColumn(column));
 			}
 
-			for (int i = 0; i < rows.ToArray().Length; i++)
+			foreach (var item in rows)
 			{
-				dt.Rows.Add(rows.ToArray()[i]);
+				dt.Rows.Add(item.ToArray());
 			}
+
 
 			list.ItemsSource = dt.DefaultView;
 		}
 
-		private void list_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
+		private void ListViewItemClick(object sender, MouseButtonEventArgs e)
 		{
+			if (list.SelectedItem == null) return;
+			DataRowView dataRow = list.SelectedItem as DataRowView;
+			DataColumnCollection columnList = dataRow.DataView.Table.Columns;
 
+			List<string> row = dataRow.Row.ItemArray.Select(item => item.ToString()).ToList();
+			List<string> columns = new();
+
+			foreach (DataColumn column in columnList)
+			{
+				columns.Add(column.ColumnName.ToString());
+			}
+
+			var window = new SqlInfoWindow(columns, row);
+			window.Show();
+			
 		}
 	}
 }
