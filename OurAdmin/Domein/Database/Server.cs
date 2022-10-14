@@ -13,7 +13,7 @@ namespace Domein.DataBase
 		public string ConnectionString { get; private set; }
 		public HashSet<Database> Databases { get; set; } = new();
 
-		private UserInfo _userInfo;
+		public UserInfo UserInfo;
 
 		public Server(string host, UserInfo userInfo, string port = "3306")
 		{
@@ -21,7 +21,7 @@ namespace Domein.DataBase
 			this.Port = port.Trim();
 			this.ConnectionString = $"Server={Host};User ID={userInfo.User};Password={userInfo.Password};";
 			ValidateServer();
-			this._userInfo = userInfo;
+			this.UserInfo = userInfo;
 		}
 
 		private void ValidateServer()
@@ -39,12 +39,12 @@ namespace Domein.DataBase
 				   Port == server.Port &&
 				   ConnectionString == server.ConnectionString &&
 				   EqualityComparer<HashSet<Database>>.Default.Equals(Databases, server.Databases) &&
-				   EqualityComparer<UserInfo>.Default.Equals(_userInfo, server._userInfo);
+				   EqualityComparer<UserInfo>.Default.Equals(UserInfo, server.UserInfo);
 		}
 
 		public override int GetHashCode()
 		{
-			return HashCode.Combine(Host, Port, ConnectionString, Databases, _userInfo);
+			return HashCode.Combine(Host, Port, ConnectionString, Databases, UserInfo);
 		}
 	}
 }

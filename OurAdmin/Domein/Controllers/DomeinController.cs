@@ -81,8 +81,6 @@ namespace Domein.Controllers
 		/// </summary>
 		public static bool IsServerConnected => DatabaseController.IsServerConnected;
 
-		public static bool ShowLoadingBar { get; set; }
-
 		public static void AddColumnToTable(Column newColumn, string selectedTable)
 		{
 			DatabaseController.ExecuteActionToColumn(newColumn, selectedTable);
@@ -226,12 +224,30 @@ namespace Domein.Controllers
 		/// <returns>All the available servers from the serverList.</returns>
 		public static List<Database> GetDatabasesFromServer()
 		{
-			if(DatabaseType == DatabaseType.MYSQL)
+			if (DatabaseType == DatabaseType.MYSQL)
 			{
 				var databases = SqlQuery("show databases;").Rows.Select(row => row.Items).ToList();
 				return databases.Where(dbName => !wontAddDatabases.Contains(dbName.First())).Select(dbName => new Database(dbName.First().ToString())).ToList();
 			}
 			throw new NotImplementedException("Database type is not inplemented");
+		}
+
+		/// <summary>
+		/// Update the current server.
+		/// </summary>
+		/// <param name="server">The server with updated values.</param>
+		public static void UpdateServer(Server server)
+		{
+			Server connectedServer = DatabaseController.GetCurrentConnectedServer();
+			CloseConnectionToServer();
+			RemoveServer(connectedServer);
+			AddServer(server);
+			OpenConnectionToServer(server);
+		}
+
+		public static Server GetConnectedServer()
+		{
+			return DatabaseController.GetCurrentConnectedServer();
 		}
 	}
 }

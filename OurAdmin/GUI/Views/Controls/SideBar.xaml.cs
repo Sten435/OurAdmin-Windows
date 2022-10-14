@@ -1,4 +1,6 @@
-﻿using Domein.Validatie;
+﻿using Domein.Controllers;
+using Domein.DataBase;
+using Domein.Validatie;
 using GUI.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
@@ -67,12 +69,25 @@ namespace GUI.Views.Controls
 		{
 			if (!ViewModelBase.Instance.IsDataBaseSelected)
 			{
-				//removeDatabaseButton.IsHitTestVisible = false;
-				//removeDatabaseButton.Opacity = .4;
+				removeDatabaseButton.IsHitTestVisible = false;
+				removeDatabaseButton.Opacity = .4;
 				return;
 			}
-			//removeDatabaseButton.IsHitTestVisible = true
-			//removeDatabaseButton.Opacity = 1;
+			removeDatabaseButton.IsHitTestVisible = true;
+			removeDatabaseButton.Opacity = 1;
+		}
+
+		private void RemoveCurrentConnectedServer(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			Server currentServer = DomeinController.GetConnectedServer();
+			DomeinController.CloseConnectionToServer();
+			DomeinController.RemoveServer(currentServer);
+			window = Window.GetWindow(this);
+			MainWindow mainWindow = new();
+			HomePage homePage = new();
+			mainWindow.Content = homePage;
+			mainWindow.Show();
+			window.Close();
 		}
 	}
 }

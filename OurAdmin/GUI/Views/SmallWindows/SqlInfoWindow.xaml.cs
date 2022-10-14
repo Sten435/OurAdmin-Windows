@@ -8,10 +8,20 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ToastNotifications;
+using ToastNotifications.Lifetime;
+using ToastNotifications.Messages;
+using ToastNotifications.Position;
+using Application = System.Windows.Application;
+using Clipboard = System.Windows.Clipboard;
+using Cursors = System.Windows.Input.Cursors;
+using Label = System.Windows.Controls.Label;
+using Orientation = System.Windows.Controls.Orientation;
 
 namespace GUI.Views.SmallWindows
 {
@@ -72,13 +82,39 @@ namespace GUI.Views.SmallWindows
 
 		private void Data_MouseDown(object sender, MouseButtonEventArgs e)
 		{
+			Notifier notifier = new Notifier(cfg =>
+			{
+				cfg.PositionProvider = new WindowPositionProvider(
+					parentWindow: Application.Current.MainWindow,
+					corner: Corner.BottomCenter,
+					offsetX: 10,
+					offsetY: 10);
+
+				cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+					notificationLifetime: TimeSpan.FromSeconds(3),
+					maximumNotificationCount: MaximumNotificationCount.FromCount(5));
+
+				cfg.Dispatcher = Application.Current.Dispatcher;
+			});
+
 			string data = ((Label)sender).Content.ToString();
 			try
 			{
 				Clipboard.SetText(data);
+				string message = $"{data} copied to clipboard";
+				notifier.ShowSuccess(message);
 			} catch (Exception)
 			{
+				notifier.ShowError("Error while pasting result to clipboard");
 			}
+
+			Task.Delay(2000).ContinueWith((task) =>
+			{
+				this.Dispatcher.Invoke(() =>
+				{
+					notifier.Dispose();
+});
+			});
 		}
 	}
 }

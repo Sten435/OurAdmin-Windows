@@ -407,11 +407,23 @@ namespace Domein.Controllers
 		{
 			if (_connectedServer == null || !IsServerConnected)
 				return;
-				//throw new DatabaseException("There is no server currently connected")
+			//throw new DatabaseException("There is no server currently connected")
 			ConnectedDatabase = null;
 			_connectedServer = null;
 			IsServerConnected = false;
 			_databasesRepo.CloseConnectionToServer();
+		}
+
+		/// <summary>
+		/// Get current connected server.
+		/// </summary>
+		/// <returns>Currently connected server.</returns>
+		/// <exception cref="DatabaseException"></exception>
+		public Server GetCurrentConnectedServer()
+		{
+			if (_connectedServer != null)
+				return _connectedServer;
+			throw new DatabaseException("There is no server currently connected");
 		}
 
 		/// <summary>

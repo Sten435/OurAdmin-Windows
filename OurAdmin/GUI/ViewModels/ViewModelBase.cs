@@ -94,6 +94,8 @@ namespace GUI.ViewModels
 			get {
 				try
 				{
+					if (!IsServerConnected)
+						return new();
 					List<Database> result = new List<Database>(DomeinController.GetDatabasesFromServer().OrderBy(database => database.Name.Length));
 					for (int i = 0; i < result.Count; i++)
 					{
@@ -118,6 +120,8 @@ namespace GUI.ViewModels
 			get {
 				try
 				{
+					if (!IsServerConnected || !IsDataBaseSelected)
+						return new();
 					if (SelectedTable != null)
 						return new(DomeinController.GetColumnsFromTable(_selectedTable).Select(column => new StructureTableViewClass(column.Name, column.__Type, column.IsNull, column.Extra, column)).ToList());
 				} catch (Exception err)
@@ -140,7 +144,6 @@ namespace GUI.ViewModels
 					return;
 
 				_selectedServer = value;
-				ShowLoadingBar = true;
 				IsServerSelected = true;
 
 				Debug.WriteLine("Started OpenConnectionToServer()");
@@ -159,8 +162,6 @@ namespace GUI.ViewModels
 				OnPropertyChanged(nameof(DatabaseList));
 				OnPropertyChanged(nameof(StructuurTypes));
 				OnPropertyChanged(nameof(NavigationBreadCrumb));
-
-				ShowLoadingBar = false;
 			}
 		}
 
@@ -200,15 +201,6 @@ namespace GUI.ViewModels
 					return;
 				_isServerSelected = value;
 				OnPropertyChanged(nameof(IsServerSelected));
-			}
-		}
-
-		public bool ShowLoadingBar {
-			get => DomeinController.ShowLoadingBar;
-			set {
-				if (ShowLoadingBar != value)
-					DomeinController.ShowLoadingBar = value;
-				OnPropertyChanged(nameof(ShowLoadingBar));
 			}
 		}
 
@@ -264,7 +256,6 @@ namespace GUI.ViewModels
 					return;
 
 				//Async timeout that the user won't spam the database List.
-				ShowLoadingBar = true;
 				_selectedDatabase = value;
 
 				DomeinController.UseDatabase(value);
@@ -283,7 +274,6 @@ namespace GUI.ViewModels
 				OnPropertyChanged(nameof(Tables));
 				OnPropertyChanged(nameof(IsDataBaseSelected));
 				OnPropertyChanged(nameof(NavigationBreadCrumb));
-				ShowLoadingBar = false;
 			}
 		}
 

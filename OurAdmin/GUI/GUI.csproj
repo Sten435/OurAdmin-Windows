@@ -27,9 +27,10 @@
 
 	<ItemGroup>
 	  <PackageReference Include="AvalonEdit" Version="6.1.3.50" />
-	  <PackageReference Include="BusyIndicator" Version="2.0.1.3" />
-	  <PackageReference Include="MaterialDesignColors" Version="2.0.6" />
-	  <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
+	  <PackageReference Include="MaterialDesignColors" Version="2.0.9" />
+	  <PackageReference Include="MaterialDesignThemes" Version="4.6.1" />
+	  <PackageReference Include="ToastNotifications" Version="2.5.1" />
+	  <PackageReference Include="ToastNotifications.Messages" Version="2.5.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -39,6 +40,9 @@
 
 	<ItemGroup>
 	  <Page Update="Views\SmallWindows\ColumnWindow.xaml">
+	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	  </Page>
+	  <Page Update="Views\SmallWindows\EditServerWindow.xaml">
 	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 	  </Page>
 	</ItemGroup>

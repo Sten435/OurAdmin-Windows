@@ -4,6 +4,7 @@ using GUI.Views.SmallWindows;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
@@ -28,6 +29,10 @@ namespace GUI.Views
 	/// </summary>
 	public partial class SqlQueryPage : UserControl
 	{
+		private string sortColumn = null;
+		GridViewColumnHeader _lastHeaderClicked = null;
+		ListSortDirection _lastDirection = ListSortDirection.Ascending;
+
 		public SqlQueryPage()
 		{
 			InitializeComponent();
@@ -50,6 +55,8 @@ namespace GUI.Views
 
 		private void ExecuteSqlQuery(object sender, RoutedEventArgs e)
 		{
+			if (string.IsNullOrWhiteSpace(textEditor.Text))
+				return;
 			list.ItemsSource = null;
 			gridView.Columns.Clear();
 
@@ -67,14 +74,14 @@ namespace GUI.Views
 				dt.Rows.Add(item.ToArray());
 			}
 
-
 			list.ItemsSource = dt.DefaultView;
 		}
 
 		private void ListViewItemClick(object sender, MouseButtonEventArgs e)
 		{
-			if (list.SelectedItem == null) return;
-			DataRowView dataRow = list.SelectedItem as DataRowView;
+			if (list.SelectedItem == null)
+				return;
+			DataRowView dataRow = list.SelectedValue as DataRowView;
 			DataColumnCollection columnList = dataRow.DataView.Table.Columns;
 
 			List<string> row = dataRow.Row.ItemArray.Select(item => item.ToString()).ToList();
@@ -87,7 +94,68 @@ namespace GUI.Views
 
 			var window = new SqlInfoWindow(columns, row);
 			window.Show();
-			
+			list.SelectedValue = null;
+		}
+
+		private void SortList(object sender, RoutedEventArgs e)
+		{
+			var headerClicked = e.OriginalSource as GridViewColumnHeader;
+			ListSortDirection direction;
+
+			if (headerClicked != null)
+			{
+				if (headerClicked.Role != GridViewColumnHeaderRole.Padding)
+				{
+					if (headerClicked != _lastHeaderClicked)
+					{
+						direction = ListSortDirection.Ascending;
+					} else
+					{
+						if (_lastDirection == ListSortDirection.Ascending)
+						{
+							direction = ListSortDirection.Descending;
+						} else
+						{
+							direction = ListSortDirection.Ascending;
+						}
+					}
+
+					var columnBinding = headerClicked.Column.DisplayMemberBinding as Binding;
+					var sortBy = columnBinding?.Path.Path ?? headerClicked.Column.Header as string;
+
+					Sort(sortBy, direction);
+
+					if (direction == ListSortDirection.Ascending)
+					{
+						headerClicked.Column.HeaderTemplate =
+						  Resources["HeaderTemplateArrowUp"] as DataTemplate;
+					} else
+					{
+						headerClicked.Column.HeaderTemplate =
+						  Resources["HeaderTemplateArrowDown"] as DataTemplate;
+					}
+
+					// Remove arrow from previously sorted header
+					if (_lastHeaderClicked != null && _lastHeaderClicked != headerClicked)
+					{
+						_lastHeaderClicked.Column.HeaderTemplate = null;
+					}
+
+					_lastHeaderClicked = headerClicked;
+					_lastDirection = direction;
+				}
+			}
+		}
+
+		private void Sort(string sortBy, ListSortDirection direction)
+		{
+			ICollectionView dataView =
+			  CollectionViewSource.GetDefaultView(list.ItemsSource);
+
+			dataView.SortDescriptions.Clear();
+			SortDescription sd = new SortDescription(sortBy, direction);
+			dataView.SortDescriptions.Add(sd);
+			dataView.Refresh();
 		}
 	}
 }

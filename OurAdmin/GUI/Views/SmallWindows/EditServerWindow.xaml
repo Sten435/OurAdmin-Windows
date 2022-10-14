@@ -1,12 +1,12 @@
 ﻿<Window
-    x:Class="GUI.Views.ServerWindow"
+    x:Class="GUI.Views.EditServerWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GUI.Views"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="New Server"
+    Title="Edit Server"
     Width="400"
     Background="{StaticResource DEFAULT_DARKER_DARK}"
     Closing="Window_Closing"
@@ -15,23 +15,6 @@
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <StackPanel>
-        <Grid Margin="0,20,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <RadioButton
-                Name="databaseTypeMysql"
-                Grid.Column="0"
-                Padding="10,0,0,4"
-                HorizontalAlignment="Center"
-                Background="{StaticResource DEFAULT_HIGHLIGHT}"
-                Content="Mysql"
-                FontSize="20"
-                FontWeight="Bold"
-                Foreground="{StaticResource DEFAULT_WHITE}"
-                GroupName="DatabaseType"
-                IsChecked="True" />
-        </Grid>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -44,37 +27,33 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <TextBox
-                Name="Server"
+                x:Name="Server"
                 Grid.Column="0"
                 VerticalAlignment="Bottom"
                 materialDesign:HintAssist.Hint="Server"
-                Style="{StaticResource inputTextBoxMysqlStyle}"
-                Text="ID367249_dbotvalideer.db.webhosting.be" />
+                Style="{StaticResource inputTextBoxMysqlStyle}" />
             <TextBox
-                Name="User"
+                x:Name="User"
                 Grid.Row="1"
                 Grid.Column="0"
                 VerticalAlignment="Bottom"
                 materialDesign:HintAssist.Hint="User"
-                Style="{StaticResource inputTextBoxMysqlStyle}"
-                Text="ID367249_dbotvalideer" />
+                Style="{StaticResource inputTextBoxMysqlStyle}" />
             <TextBox
-                Name="Password"
+                x:Name="Password"
                 Grid.Row="2"
                 Grid.Column="0"
                 VerticalAlignment="Bottom"
                 materialDesign:HintAssist.Hint="Password"
-                Style="{StaticResource inputTextBoxMysqlStyle}"
-                Text="j38Go4t8lEGTNnq2eCf0" />
+                Style="{StaticResource inputTextBoxMysqlStyle}" />
             <TextBox
-                Name="Port"
+                x:Name="Port"
                 Grid.Row="3"
                 Grid.Column="0"
                 VerticalAlignment="Bottom"
                 materialDesign:HintAssist.Hint="Port"
                 PreviewTextInput="NumberValidationTextBox"
-                Style="{StaticResource inputTextBoxMysqlStyle}"
-                Text="3306" />
+                Style="{StaticResource inputTextBoxMysqlStyle}" />
             <Button
                 Grid.Row="4"
                 Grid.Column="0"
@@ -82,12 +61,12 @@
                 Height="45"
                 Margin="10"
                 HorizontalAlignment="Right"
-                Click="AddServer"
+                Click="UpdateServer"
                 FontSize="20">
 
                 <TextBlock
                     Margin="10,0,10,4.2"
-                    Text="Save"
+                    Text="Update"
                     TextDecorations="Underline" />
             </Button>
         </Grid>

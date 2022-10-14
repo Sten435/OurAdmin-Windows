@@ -52,13 +52,22 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
             </Border>
-            <TextBlock
-                Margin="0,12"
-                FontWeight="Normal"
-                MouseLeftButtonUp="AddNewServerPopup"
-                Style="{StaticResource newServerStyle}"
-                Text="Add Server"
-                TextDecorations="Underline" />
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <TextBlock
+                    Margin="0,12,20,0"
+                    FontWeight="Bold"
+                    MouseLeftButtonUp="AddNewServerPopup"
+                    Style="{StaticResource newServerStyle}"
+                    Text="Add Server"
+                    TextDecorations="Underline" />
+                <TextBlock
+                    Margin="20,12,0,0"
+                    FontWeight="Bold"
+                    MouseLeftButtonUp="RemoveCurrentConnectedServer"
+                    Style="{StaticResource newServerStyle}"
+                    Text="Remove Server"
+                    TextDecorations="Underline" />
+            </StackPanel>
         </StackPanel>
         <ListBox
             Grid.Row="1"

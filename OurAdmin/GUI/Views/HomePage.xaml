@@ -2,23 +2,15 @@
     x:Class="GUI.Views.HomePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:busyindicator="https://github.com/Peoky/BusyIndicator"
     xmlns:controls="clr-namespace:GUI.Views.Controls"
     Title="TablesView">
 
     <Grid>
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <busyindicator:BusyMask
-                x:Name="BusyIndicator"
-                BusyContent="Please wait..."
-                Foreground="{StaticResource DEFAULT_DARKER_DARK}"
-                IndicatorType="Cupertino"
-                IsBusy="{Binding ShowLoadingBar}">
-                <DockPanel>
-                    <controls:SideBar DockPanel.Dock="Left" />
-                    <controls:HeaderNavigation DockPanel.Dock="Top" />
-                </DockPanel>
-            </busyindicator:BusyMask>
+            <DockPanel>
+                <controls:SideBar DockPanel.Dock="Left" />
+                <controls:HeaderNavigation DockPanel.Dock="Top" />
+            </DockPanel>
         </ScrollViewer>
     </Grid>
 </Page>

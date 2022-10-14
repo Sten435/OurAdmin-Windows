@@ -12,6 +12,7 @@
     Foreground="{StaticResource DEFAULT_WHITE}"
     ResizeMode="NoResize"
     SizeToContent="Height"
+    Topmost="True"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <StackPanel>
