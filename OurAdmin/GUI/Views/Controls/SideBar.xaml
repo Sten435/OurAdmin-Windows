@@ -76,7 +76,8 @@
             materialDesign:ListBoxItemAssist.ShowSelection="False"
             AlternationCount="2"
             ItemsSource="{Binding DatabaseList}"
-            SelectedItem="{Binding SelectedDatabase}">
+            SelectedItem="{Binding SelectedDatabase}"
+            SelectionChanged="ListBox_SelectionChanged">
             <ListBox.ItemContainerStyle>
                 <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListBoxItem">
                     <Style.Triggers>

@@ -85,9 +85,15 @@ namespace GUI.Views.Controls
 			window = Window.GetWindow(this);
 			MainWindow mainWindow = new();
 			HomePage homePage = new();
+			ViewModelBase.Instance.UpdateBinding();
 			mainWindow.Content = homePage;
 			mainWindow.Show();
 			window.Close();
+		}
+
+		private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			SelectionChanged();
 		}
 	}
 }

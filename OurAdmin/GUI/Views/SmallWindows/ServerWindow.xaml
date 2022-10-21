@@ -49,7 +49,7 @@
                 VerticalAlignment="Bottom"
                 materialDesign:HintAssist.Hint="Server"
                 Style="{StaticResource inputTextBoxMysqlStyle}"
-                Text="ID367249_dbotvalideer.db.webhosting.be" />
+                Text="localhost" />
             <TextBox
                 Name="User"
                 Grid.Row="1"
@@ -57,7 +57,7 @@
                 VerticalAlignment="Bottom"
                 materialDesign:HintAssist.Hint="User"
                 Style="{StaticResource inputTextBoxMysqlStyle}"
-                Text="ID367249_dbotvalideer" />
+                Text="root" />
             <TextBox
                 Name="Password"
                 Grid.Row="2"
@@ -65,7 +65,7 @@
                 VerticalAlignment="Bottom"
                 materialDesign:HintAssist.Hint="Password"
                 Style="{StaticResource inputTextBoxMysqlStyle}"
-                Text="j38Go4t8lEGTNnq2eCf0" />
+                Text="" />
             <TextBox
                 Name="Port"
                 Grid.Row="3"

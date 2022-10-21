@@ -15,11 +15,11 @@ namespace Domein.DataBase
 
 		public UserInfo UserInfo;
 
-		public Server(string host, UserInfo userInfo, string port = "3306")
+		public Server(string host, UserInfo userInfo, string port)
 		{
 			this.Host = host.Trim();
 			this.Port = port.Trim();
-			this.ConnectionString = $"Server={Host};User ID={userInfo.User};Password={userInfo.Password};";
+			this.ConnectionString = $"Server={Host};User ID={userInfo.User};Password={userInfo.Password};Port={port}";
 			ValidateServer();
 			this.UserInfo = userInfo;
 		}

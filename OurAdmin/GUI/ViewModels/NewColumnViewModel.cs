@@ -215,8 +215,7 @@ namespace GUI.ViewModels
 			else
 				DomeinController.WriteChangeColumnToTable(newColumn, ViewModelBase.SelectedColumn.Name, DomeinController.SelectedTable);
 
-			ViewModelBase.OnPropertyChanged(nameof(ViewModelBase.ColumnStructure));
-			ViewModelBase.OnPropertyChanged(nameof(ViewModelBase.Tables));
+			ViewModelBase.UpdateBinding();
 			(window as Window).Close();
 		}
 

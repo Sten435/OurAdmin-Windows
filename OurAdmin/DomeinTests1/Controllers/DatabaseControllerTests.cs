@@ -45,8 +45,8 @@ namespace Domein.Controllers.Tests
 			user3 = new("user", "banz");
 
 			server1 = null;
-			server2 = new("localhost", user2);
-			server3 = new("combel", user3);
+			server2 = new("localhost", user2, "3306");
+			server3 = new("combel", user3, "3306");
 		}
 
 		[TestMethod()]

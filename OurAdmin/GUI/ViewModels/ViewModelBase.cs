@@ -2,6 +2,7 @@
 using Domein.DataBase;
 using Domein.DataBase.DataTable;
 using Domein.DataBase.Exceptions;
+using Domein.DataBase.Table;
 using Domein.Validatie;
 using GUI.Views;
 using GUI.Views.SmallWindows;
@@ -16,7 +17,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
+using Table = Domein.DataBase.DataTable.Table;
 
 namespace GUI.ViewModels
 {
@@ -75,8 +78,6 @@ namespace GUI.ViewModels
 					}
 					IsServerSelected = false;
 					SelectedServer = null;
-					OnPropertyChanged(nameof(SelectedServer));
-					OnPropertyChanged(nameof(IsServerSelected));
 					return new();
 				} catch (Exception)
 				{
@@ -108,7 +109,7 @@ namespace GUI.ViewModels
 					{
 						DomeinController.CloseConnectionToServer();
 						DomeinController.RemoveServer(DomeinController.GetServers().Find(server => server.Host == SelectedServer.Host));
-						OnPropertyChanged(nameof(ServerList));
+						UpdateBinding();
 						MessageBox.Show(error.Message, "Error 1", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 						//MessageBox.Show("There is been an error connection to the server, please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 					}
@@ -146,22 +147,12 @@ namespace GUI.ViewModels
 				_selectedServer = value;
 				IsServerSelected = true;
 
-				Debug.WriteLine("Started OpenConnectionToServer()");
-				Stopwatch stopwatch = new();
-				stopwatch.Start();
-
 				if (DomeinController.IsServerConnected)
 					DomeinController.CloseConnectionToServer();
 
 				DomeinController.OpenConnectionToServer(value);
 
-				Debug.WriteLine(stopwatch.Elapsed.TotalSeconds + " seconds");
-				Debug.WriteLine("Ended OpenConnectionToServer()");
-
-				OnPropertyChanged(nameof(SelectedServer));
-				OnPropertyChanged(nameof(DatabaseList));
-				OnPropertyChanged(nameof(StructuurTypes));
-				OnPropertyChanged(nameof(NavigationBreadCrumb));
+				UpdateBinding();
 			}
 		}
 
@@ -174,7 +165,7 @@ namespace GUI.ViewModels
 				if (_primaryKeyChecked == value)
 					return;
 				_primaryKeyChecked = value;
-				OnPropertyChanged(nameof(PrimaryKeyChecked));
+				UpdateBinding();
 			}
 		}
 
@@ -187,7 +178,7 @@ namespace GUI.ViewModels
 				if (_nullChecked == value)
 					return;
 				_nullChecked = value;
-				OnPropertyChanged(nameof(PrimaryKeyChecked));
+				UpdateBinding();
 			}
 		}
 
@@ -200,7 +191,7 @@ namespace GUI.ViewModels
 				if (_isServerSelected == value)
 					return;
 				_isServerSelected = value;
-				OnPropertyChanged(nameof(IsServerSelected));
+				UpdateBinding();
 			}
 		}
 
@@ -255,7 +246,6 @@ namespace GUI.ViewModels
 				if (_selectedDatabase == value)
 					return;
 
-				//Async timeout that the user won't spam the database List.
 				_selectedDatabase = value;
 
 				DomeinController.UseDatabase(value);
@@ -266,14 +256,7 @@ namespace GUI.ViewModels
 
 				NotifyDatabaseSelectionChanged?.Invoke();
 
-				OnPropertyChanged(nameof(TablesPageVisibility));
-				OnPropertyChanged(nameof(StructurePageVisibility));
-				OnPropertyChanged(nameof(SqlQueryPageVisibility));
-
-				OnPropertyChanged(nameof(SelectedDatabase));
-				OnPropertyChanged(nameof(Tables));
-				OnPropertyChanged(nameof(IsDataBaseSelected));
-				OnPropertyChanged(nameof(NavigationBreadCrumb));
+				UpdateBinding();
 			}
 		}
 
@@ -286,10 +269,7 @@ namespace GUI.ViewModels
 				if (_selectedTable == value)
 					return;
 				_selectedTable = value;
-				OnPropertyChanged(nameof(SelectedTable));
-				OnPropertyChanged(nameof(ColumnStructure));
-				OnPropertyChanged(nameof(IsTableSelected));
-				OnPropertyChanged(nameof(NavigationBreadCrumb));
+				UpdateBinding();
 			}
 		}
 
@@ -302,7 +282,8 @@ namespace GUI.ViewModels
 				if (_selectedColumn == value)
 					return;
 				_selectedColumn = value;
-				OnPropertyChanged(nameof(SelectedColumn));
+				//UpdateBinding()
+				OnPropertyChanged(nameof(NavigationBreadCrumb));
 				OnPropertyChanged(nameof(IsColumnSelected));
 			}
 		}
@@ -313,7 +294,7 @@ namespace GUI.ViewModels
 				return new RelayCommand<object>((_none_) =>
 				{
 					AddTableToDatabase(_none_);
-					OnPropertyChanged(nameof(Tables));
+					UpdateBinding();
 				});
 			}
 		}
@@ -322,7 +303,7 @@ namespace GUI.ViewModels
 				return new RelayCommand<object>((_none_) =>
 				{
 					RemoveTableFromDatabase(_none_);
-					OnPropertyChanged(nameof(Tables));
+					UpdateBinding();
 				});
 			}
 		}
@@ -334,7 +315,7 @@ namespace GUI.ViewModels
 					if (Validate.NullOrWhiteSpace(NewDatabaseToAdd))
 						return;
 					DomeinController.AddDatabaseToServer(NewDatabaseToAdd);
-					OnPropertyChanged(nameof(DatabaseList));
+					UpdateBinding();
 				});
 			}
 		}
@@ -346,17 +327,11 @@ namespace GUI.ViewModels
 					if (!IsDataBaseSelected || SelectedDatabase == null)
 						return;
 					DomeinController.RemoveDatabaseFromServer(SelectedDatabase);
-					SelectedDatabase = null;
 					TablesPageVisibility = Visibility.Visible;
 					StructurePageVisibility = Visibility.Collapsed;
 					SqlQueryPageVisibility = Visibility.Collapsed;
 
-					OnPropertyChanged(nameof(TablesPageVisibility));
-					OnPropertyChanged(nameof(StructurePageVisibility));
-					OnPropertyChanged(nameof(SqlQueryPageVisibility));
-					OnPropertyChanged(nameof(DatabaseList));
-					OnPropertyChanged(nameof(IsDataBaseSelected));
-					OnPropertyChanged(nameof(NavigationBreadCrumb));
+					UpdateBinding();
 				});
 			}
 		}
@@ -366,7 +341,7 @@ namespace GUI.ViewModels
 				return new RelayCommand<object>((_none_) =>
 				{
 					OpenNewColumnWindow(_none_);
-					OnPropertyChanged(nameof(Tables));
+					UpdateBinding();
 				});
 			}
 		}
@@ -378,7 +353,7 @@ namespace GUI.ViewModels
 					if (!IsColumnSelected || SelectedColumn == null)
 						return;
 					DomeinController.RemoveColumnFromTable(SelectedColumn.Name, DomeinController.SelectedTable);
-					OnPropertyChanged(nameof(ColumnStructure));
+					UpdateBinding();
 				});
 			}
 		}
@@ -388,7 +363,7 @@ namespace GUI.ViewModels
 				return new RelayCommand<object>((_none_) =>
 				{
 					ChangeTable(_none_);
-					OnPropertyChanged(nameof(Tables));
+					UpdateBinding();
 				});
 			}
 		}
@@ -401,9 +376,7 @@ namespace GUI.ViewModels
 					StructurePageVisibility = Visibility.Collapsed;
 					SqlQueryPageVisibility = Visibility.Collapsed;
 
-					OnPropertyChanged(nameof(TablesPageVisibility));
-					OnPropertyChanged(nameof(StructurePageVisibility));
-					OnPropertyChanged(nameof(SqlQueryPageVisibility));
+					UpdateBinding();
 				});
 			}
 		}
@@ -416,9 +389,7 @@ namespace GUI.ViewModels
 					StructurePageVisibility = Visibility.Visible;
 					SqlQueryPageVisibility = Visibility.Collapsed;
 
-					OnPropertyChanged(nameof(TablesPageVisibility));
-					OnPropertyChanged(nameof(StructurePageVisibility));
-					OnPropertyChanged(nameof(SqlQueryPageVisibility));
+					UpdateBinding();
 				});
 			}
 		}
@@ -445,9 +416,7 @@ namespace GUI.ViewModels
 					StructurePageVisibility = Visibility.Collapsed;
 					SqlQueryPageVisibility = Visibility.Visible;
 
-					OnPropertyChanged(nameof(TablesPageVisibility));
-					OnPropertyChanged(nameof(StructurePageVisibility));
-					OnPropertyChanged(nameof(SqlQueryPageVisibility));
+					UpdateBinding();
 				});
 			}
 		}
@@ -515,6 +484,41 @@ namespace GUI.ViewModels
 			} catch (Exception error)
 			{
 				MessageBox.Show(error.Message, "Error 6", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+			}
+		}
+
+		public void UpdateBinding()
+		{
+			try
+			{
+				OnPropertyChanged(nameof(Tables));
+				OnPropertyChanged(nameof(StructuurTypes));
+				OnPropertyChanged(nameof(ServerList));
+				OnPropertyChanged(nameof(NewTableToAdd));
+				OnPropertyChanged(nameof(NewDatabaseToAdd));
+				OnPropertyChanged(nameof(NewColumnName));
+				OnPropertyChanged(nameof(CustomSqlQueryText));
+				OnPropertyChanged(nameof(DatabaseList));
+				OnPropertyChanged(nameof(ColumnStructure));
+				OnPropertyChanged(nameof(NavigationBreadCrumb));
+				OnPropertyChanged(nameof(SelectedServer));
+				OnPropertyChanged(nameof(PrimaryKeyChecked));
+				OnPropertyChanged(nameof(NullChecked));
+				OnPropertyChanged(nameof(IsServerSelected));
+				OnPropertyChanged(nameof(IsDataBaseSelected));
+				OnPropertyChanged(nameof(TablesPageVisibility));
+				OnPropertyChanged(nameof(StructurePageVisibility));
+				OnPropertyChanged(nameof(SqlQueryPageVisibility));
+				OnPropertyChanged(nameof(AnyServersAvailable));
+				OnPropertyChanged(nameof(IsServerConnected));
+				OnPropertyChanged(nameof(SelectedDatabase));
+				OnPropertyChanged(nameof(IsTableSelected));
+				OnPropertyChanged(nameof(SelectedTable));
+				OnPropertyChanged(nameof(IsColumnSelected));
+				OnPropertyChanged(nameof(SelectedColumn));
+			} catch (Exception)
+			{
+
 			}
 		}
 	}
